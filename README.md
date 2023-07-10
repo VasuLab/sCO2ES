@@ -1,3 +1,9 @@
-# Packed Bed Thermal Energy Storage (TES)
+# sCO2 Energy Storage
 
-This repository will contain code for running simulations of packed bed thermal energy storage models.
+This repository contains the code for the sCO2 energy storage cycle modeling project which will include:
+
+- Packed bed thermal energy storage
+- Cycle components:
+  - Heat Exchanger
+  - Compressor
+  - Turbine
