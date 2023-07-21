@@ -63,3 +63,33 @@ def effective_thermal_conductivity(
                     1 / (1 / phi + h_rs * d / k_f)
                     + gamma * k_f / k_s)
     )
+
+
+def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
+    r"""
+    Modified Ergun's equation[^1]:
+
+    $$
+    \Delta P = \frac{\Delta z G^2}{\rho_f d} \left[ \xi_1 \frac{(1-\epsilon)^2}{\epsilon^3 \psi^2} \frac{\mu_f}{Gd}
+    + \xi_2 frac{(1-\epsilon)}{\epsilon^3 \psi}\right]
+    $$
+
+    [^1]: I. Macdonald, M. El-Sayed, K. Mow, and F. Dullien, “Flow through porous media-the Ergun equation revisited,”
+    Industrial & Engineering Chemistry Fundamentals, vol. 18, no. 3, pp. 199–208, 1979.
+
+    Parameters:
+        dz: Axial position step size [m].
+        rho_f: Density of the fluid [kg/m^3].
+        mu_f: Dynamic viscosity of the fluid [Pa s].
+        G: Effective mass flow rate per unit cross-section (kg/m^2 s).
+        eps: Void fraction [-].
+        d: Particle diameter [m].
+        psi: Sphericity [-].
+        xi1: Viscous loss coefficient.
+        xi2: Inertial loss coefficient.
+
+    """
+    return dz * G**2 / (rho_f * d) * (
+            xi1 * (1 - eps)**2 * mu_f / (eps**3 * psi**2 * G * d)  # Viscous loss
+            + xi2 * (1 - eps) / (eps**3 * psi)  # Inertial loss
+    )
