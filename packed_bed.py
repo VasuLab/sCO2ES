@@ -65,6 +65,56 @@ def effective_thermal_conductivity(
     )
 
 
+def volumetric_convective_heat_transfer_coeff(k_f, cp_f, G, eps, d):
+    r"""
+    Calculates the volumetric convective heat transfer coefficient as the product of the convective heat
+    transfer coefficient for a spherical particle and the ratio between the particles total heat transfer area
+    and the total volume:
+
+    $$
+    h_v = h_part \frac{6(1-\varepsilon)}{d}
+    $$
+
+    The particle convective heat transfer coefficient is given by Pfeffer's correlation[^1]:
+
+    $$
+    h_{part} = 1.26 \left[\frac{1-(1-\varepsilon)^{5/3}}{W}\right]^{1/3} (c_{p_f} G)^{1/3}
+    \left(\frac{k_f}{d}\right)^{2/3}
+    $$
+
+    where $W$ is given by:
+
+    $$
+    W = 2-3(1-\varepsilon)^{1/3}+3(1-\varepsilon)^{5/3}-2(1-\varepsilon)^2
+    $$
+
+    The lower limit of analytical heat transfer is given by:
+
+    $$
+    h_{part} = \frac{2k_f}{d}
+    $$
+
+    for a heated isothermal sphere in a quiescent fluid medium.
+
+    [^1]: R. Pfeffer, “Heat and mass transport in multiparticle systems,” Industrial & Engineering Chemistry
+    Fundamentals, vol. 3, no. 4, pp. 380–383, 1964.
+
+    Parameters:
+        k_f: Thermal conductivity of the fluid [W/m K].
+        cp_f: Specific heat capacity of the fluid [J/kg K].
+        G: Effective mass flow rate per unit of cross-section [kg/m^2 s].
+        eps: Void fraction [-].
+        d: Particle diameter [m].
+    """
+
+    W = 2 - 3 * (1 - eps)**(1/3) + 3 * (1 - eps)**(5/3) - 2 * (1 - eps)**2
+    h_part = np.max(
+        1.26 * ((1 - (1 - eps)**(5/3)) / W)**(1/3) * (cp_f * G)**(1/3) * (k_f / d)**(2/3),  # Pfeffer's correlation
+        2 * k_f / d  # Lower limit
+    )
+    return h_part * 6 * (1 - eps) / d
+
+
 def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
     r"""
     Modified Ergun's equation[^1]:
