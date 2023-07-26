@@ -115,6 +115,29 @@ def volumetric_convective_heat_transfer_coeff(k_f, cp_f, G, eps, d):
     return h_part * 6 * (1 - eps) / d
 
 
+def wall_convective_heat_transfer_coeff(k_f, Re_d, Pr, d):
+    r"""
+    Returns the convective heat transfer coefficient between the fluid and the wall:
+
+    $$
+    h_{wall}^{cv} = \left( 2.58 Re_d^{1/3} Pr^{1/3} + 0.094 Re_d^{0.8} Pr^{0.4} \right) \frac{k_f}{d}
+    $$
+
+    according to the correlation of Beek[^1].
+
+    [^1]: J. Beek, “Design of packed catalytic reactors,” in Advances in Chemical Engineering, Elsevier,
+    1962, pp. 203–271.
+
+    Parameters:
+        k_f: Thermal conductivity of the fluid [W/m K].
+        Re_d: Reynolds number of the flow based on particle diameter.
+        Pr: Prandtl number of the flow.
+        d: Particle diameter [W].
+
+    """
+    return (2.58 * Re_d**(1/3) * Pr**(1/3) + 0.094 * Re_d**0.8 * Pr**0.4) * k_f / d
+
+
 def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
     r"""
     Modified Ergun's equation[^1]:
