@@ -184,7 +184,7 @@ def volumetric_convective_heat_transfer_coeff(k_f, cp_f, G, eps, d):
     return h_part * 6 * (1 - eps) / d
 
 
-def wall_convective_heat_transfer_coeff(k_f, Re_d, Pr, d):
+def conv_wall_heat_transfer_coeff(k_f, Re_d, Pr, d):
     r"""
     Returns the convective heat transfer coefficient between the fluid and the wall:
 
@@ -205,6 +205,59 @@ def wall_convective_heat_transfer_coeff(k_f, Re_d, Pr, d):
 
     """
     return (2.58 * Re_d**(1/3) * Pr**(1/3) + 0.094 * Re_d**0.8 * Pr**0.4) * k_f / d
+
+
+def cond_rad_wall_heat_transfer_coeff(k_f, k_s, h_rv, h_rs, eps, d, phi):
+    r"""
+    Calculates the conductive and radiative wall heat transfer coefficient according to Ofuchi and Kunii[^1]
+
+    $$
+    k_{eff}^{stag} = k_f \left[\varepsilon \left(1 + \frac{h_{rv}d}{k_f}\right) +
+    \frac{1-\varepsilon}{\left(\frac{1}{\phi}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{2}{3\kappa}}\right]
+    $$
+
+    and
+
+    $$
+    k_{wall}^{stag} = k_f \left[\varepsilon_{wall} \left(2 + \frac{h_{rv}d}{k_f}\right) +
+    \frac{1-\varepsilon_{wall}}{\left(\frac{1}{\phi_{wall}}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{1}{3\kappa}}\right]
+    $$
+
+    where the wall porosity ($\varepsilon_{wall}$) is assumed to be $0.4$ and $\phi_{wall}$ is given by
+
+    $$
+    \phi_{wall} = \frac{1}{4} \frac{\left(\frac{\kappa-1}{\kappa}\right)^2}{\ln{\kappa} - \frac{\kappa-1}{\kappa}} -
+    \frac{1}{3\kappa}
+    $$
+
+    [^1]: K. Ofuchi and D. Kunii, “Heat-transfer characteristics of packed beds with stagnant fluids,” International
+    Journal of Heat and Mass Transfer, vol. 8, no. 5, pp. 749–757, 1965.
+
+    Parameters:
+        k_f: Thermal conductivity of the fluid [W/m K].
+        k_s: Thermal conductivity of the solid [W/m K].
+        h_rv: void-to-void radiative heat transfer coefficient.
+        h_rs: Solid-to-solid radiative heat transfer coefficient
+        eps: Void fraction [-].
+        d: Particle diameter [m].
+        phi: Effective film thickness ratio.
+
+    """
+    kappa = k_s / k_f
+    eps_wall = 0.4
+
+    k_stag_eff = k_f * (
+        eps * (1 + h_rv * d / k_f)
+        + (1 - eps) / ((1/phi + h_rs * d / k_f)**-1 + 2 / (3 * kappa))
+    )
+
+    phi_wall = 1/4 * ((kappa - 1) / kappa)**2 / (np.log(kappa) - (kappa - 1) / kappa) - 1/(3 * kappa)
+    k_stag_wall = k_f * (
+        eps_wall * (2 + h_rv * d / k_f)
+        + (1 - eps_wall) / ((1/phi_wall + h_rs * d / k_f)**-1 + 1/(3 * kappa))
+    )
+
+    return k_stag_eff * k_stag_wall / (k_stag_eff - k_stag_wall / 2)
 
 
 def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
