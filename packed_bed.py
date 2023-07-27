@@ -1,3 +1,11 @@
+"""
+An implementation of the packed bed thermal energy storage model described by Battisti et al.[^1].
+
+[^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
+systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
+183, p. 116032, 2021.
+"""
+
 import numpy as np
 
 
