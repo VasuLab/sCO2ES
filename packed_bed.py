@@ -9,7 +9,7 @@ systems for concentrating solar-powered plants using supercritical carbon dioxid
 import numpy as np
 
 
-def effective_film_thickness_ratio(k_s: float, k_f: float, eps: float):
+def effective_film_thickness_ratio(k_s, k_f, eps):
     r"""
     Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
     particles and the particle diameter according to the interpolation of Kunii and Smith[^1] for
@@ -50,7 +50,7 @@ def effective_film_thickness_ratio(k_s: float, k_f: float, eps: float):
     return phi1 + (phi2 - phi1) * (eps - 0.26) / 0.216
 
 
-def void_radiative_heat_transfer_coeff(T: float, eps: float, E_s: float):
+def void_radiative_heat_transfer_coeff(T, eps, E_s):
     r"""
     Calculates the void-to-void radiative heat transfer coefficient for a packed bed given by the correlation of Yagi
     and Kunii[^1]
@@ -71,7 +71,7 @@ def void_radiative_heat_transfer_coeff(T: float, eps: float, E_s: float):
     return 0.1952 * (T/100)**3 / (1 + eps * (1 - E_s) / (2 * E_s * (1 - eps)))
 
 
-def surface_radiative_heat_transfer_coeff(T: float, E_s: float):
+def surface_radiative_heat_transfer_coeff(T, E_s):
     r"""
     Calculates the surface-to-surface radiative heat transfer coefficient for a packed bed given by the correlation of
     Yagi and Kunii[^1]
@@ -91,17 +91,7 @@ def surface_radiative_heat_transfer_coeff(T: float, E_s: float):
     return 0.1952 * (T/100)**3 * E_s / (2 - E_s)
 
 
-def effective_thermal_conductivity(
-        k_f: float,
-        k_s: float,
-        eps: float,
-        h_rv: float,
-        h_rs: float,
-        phi: float,
-        d: float,
-        *,
-        beta: float = 0.9,
-):
+def effective_thermal_conductivity(k_f,k_s, eps, h_rv, h_rs, phi, d, *, beta=0.9):
     r"""
     Approximates the effective thermal conductivity in a packed bed using the model of Kunii and Smith[^1]:
 
