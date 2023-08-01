@@ -7,9 +7,42 @@ systems for concentrating solar-powered plants using supercritical carbon dioxid
 """
 
 import numpy as np
+import CoolProp as CP
 
 
 class PackedBedModel:
+
+    def __init__(self, T):
+        self.t = 0
+        self.n = ...
+
+        self.P = ...
+        self.T_f = ...
+
+        self.k_f = ...
+        self.rho_f = ...
+        self.mu_f = ...
+        self.cp_f = ...
+
+    def advance(self, t):
+        while self.t < t:
+            self.step()
+
+            ...
+
+    def step(self):
+        ...
+
+        self.update_props()
+
+        ...
+
+    def update_props(self):
+        for i in range(self.n):
+            self.k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", self.T_f[i], "P", self.P[i], "CO2")
+            self.rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
+            self.mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", self.T_f[i], "P", self.P[i], "CO2")
+            self.cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
 
     @staticmethod
     def effective_film_thickness_ratio(k_s, k_f, eps):
