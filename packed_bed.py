@@ -45,6 +45,27 @@ class PackedBedModel:
             self.cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
 
     @staticmethod
+    def biot_number(h_v, d, eps, k_s):
+        r"""
+        Calculates the biot number ($Bi$) for a packed bed[^1]
+
+        $$
+        Bi = \frac{h_v d^2}{36(1 - \varepsilon) k_s}
+        $$
+
+        [^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+        Engineering, vol. 183, p. 116032, 2021.
+
+        Parameters:
+            h_v: Volumetric heat transfer coefficient [W/m^3 K].
+            d: Particle diameter [m].
+            eps: Void fraction [-].
+            k_s: Thermal conductivity of the solid [W/m K].
+        """
+        return h_v * d ** 2 / (36 * (1 - eps) * k_s)
+
+    @staticmethod
     def effective_film_thickness_ratio(k_s, k_f, eps):
         r"""
         Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
