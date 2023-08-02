@@ -1,16 +1,15 @@
-"""
-An implementation of the packed bed thermal energy storage model described by Battisti et al.[^1].
-
-[^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
-systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
-183, p. 116032, 2021.
-"""
-
 import numpy as np
 import CoolProp as CP
 
 
 class PackedBedModel:
+    """
+    An implementation of the packed bed thermal energy storage model described by Battisti et al.[^1].
+
+    [^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
+    systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
+    183, p. 116032, 2021.
+    """
 
     def __init__(self, T):
         self.t = 0
@@ -58,10 +57,10 @@ class PackedBedModel:
         Engineering, vol. 183, p. 116032, 2021.
 
         Parameters:
-            h_v: Volumetric heat transfer coefficient [W/m^3 K].
-            d: Particle diameter [m].
-            eps: Void fraction [-].
-            k_s: Thermal conductivity of the solid [W/m K].
+            h_v: Volumetric heat transfer coefficient, $h_v$ [W/m^3^⋅K].
+            d: Particle diameter, $d$ [m].
+            eps: Void fraction, $\varepsilon$.
+            k_s: Thermal conductivity of the solid, $k_s$ [W/m⋅K].
         """
         return h_v * d ** 2 / (36 * (1 - eps) * k_s)
 
@@ -83,16 +82,16 @@ class PackedBedModel:
         (\kappa - 1)\cos{\theta_i}\right] - \left(\frac{\kappa - 1}{\kappa}\right) (1 - \cos{\theta_i)}} - \frac{2}{3\kappa}
         $$
 
-        and $\sin^2 \theta_i = \frac{1}{n_i}$ for $n_1 = 1.5$ and $n_2 = 4\sqrt{3}$.
+        where $\kappa = k_s/k_f$ and the interpolation bounds are given by $\sin^2 \theta_i = \frac{1}{n_i}$ for
+        $n_1 = 1.5$ and $n_2 = 4\sqrt{3}$.
 
-        [1] D. Kunii and J. Smith, “Heat transfer characteristics of porous rocks,” AIChE Journal, vol. 6, no. 1, pp.
+        [^1]: D. Kunii and J. Smith, “Heat transfer characteristics of porous rocks,” AIChE Journal, vol. 6, no. 1, pp.
         71–78, 1960.
 
         Parameters:
-            k_s: Thermal conductivity of the solid [W/m K].
-            k_f: Thermal conductivity of the fluid [W/m K].
-            eps: Void fraction [-].
-
+            k_s: Thermal conductivity of the solid, $k_s$ [W/m⋅K].
+            k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
+            eps: Void fraction, $\varepsilon$.
         """
         kappa = k_s / k_f
 
@@ -120,10 +119,9 @@ class PackedBedModel:
         vol. 3, no. 3, pp. 373–381, 1957.
 
         Parameters:
-            T: Temperature [K].
-            eps: Void fraction [-].
-            E_s: Emissivity of the solid [-].
-
+            T: Temperature, $T$ [K].
+            eps: Void fraction, $\varepsilon$.
+            E_s: Emissivity of the solid, $E_s$.
         """
         return 0.1952 * (T/100)**3 / (1 + eps * (1 - E_s) / (2 * E_s * (1 - eps)))
 
@@ -141,8 +139,8 @@ class PackedBedModel:
         vol. 3, no. 3, pp. 373–381, 1957.
 
         Parameters:
-            T: Temperature [K].
-            E_s: Emissivity of the solid [-].
+            T: Temperature, $T$ [K].
+            E_s: Emissivity of the solid, $E_s$.
 
         """
         return 0.1952 * (T/100)**3 * E_s / (2 - E_s)
@@ -150,7 +148,7 @@ class PackedBedModel:
     @staticmethod
     def effective_thermal_conductivity(k_f, k_s, eps, h_rv, h_rs, phi, d, *, beta=0.9):
         r"""
-        Approximates the effective thermal conductivity in a packed bed using the model of Kunii and Smith[^1]:
+        Approximates the effective thermal conductivity in a packed bed using the model of Kunii and Smith[^1]
 
         $$
         k_{eff} = k_f \left[\varepsilon\left(1+\beta \frac{h_{r\nu}d}{k_f}\right) +
@@ -162,16 +160,15 @@ class PackedBedModel:
         pp. 71–78, 1960.
 
         Parameters:
-            k_f: Thermal conductivity of the fluid [W/mK].
-            k_s: Thermal conductivity of the solid [W/mK].
-            eps: Void fraction [-].
-            h_rv: Void-to-void radiative heat transfer coefficient.
-            h_rs: Surface-to-surface radiative heat transfer coefficient.
-            phi: Effective film thickness ratio.
-            d: Solid particle diameter [m].
+            k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
+            k_s: Thermal conductivity of the solid, $k_s$ [W/m⋅K].
+            eps: Void fraction. $\varepsilon$.
+            h_rv: Void-to-void radiative heat transfer coefficient, $h_{rv}$ [W/m^2^⋅K].
+            h_rs: Surface-to-surface radiative heat transfer coefficient, $h_{rs}$ [W/m^2^⋅K].
+            phi: Effective film thickness ratio, $\phi$.
+            d: Solid particle diameter, $d$ [m].
             beta: Ratio of the average length between the centers of two neighboring solids to
-                the mean particle diameter.
-
+                the mean particle diameter, $\beta = 0.9$ (default).
         """
         return k_f * (
             eps * (1 + beta * h_rv * d / k_f) +
@@ -185,44 +182,43 @@ class PackedBedModel:
         r"""
         Calculates the volumetric convective heat transfer coefficient as the product of the convective heat
         transfer coefficient for a spherical particle and the ratio between the particles total heat transfer area
-        and the total volume:
+        and the total volume
 
         $$
-        h_v = h_part \frac{6(1-\varepsilon)}{d}
+        h_v = h_{part} \frac{6(1-\varepsilon)}{d}
         $$
 
-        The particle convective heat transfer coefficient is given by Pfeffer's correlation[^1]:
+        The particle convective heat transfer coefficient is given by Pfeffer's correlation[^1]
 
         $$
         h_{part} = 1.26 \left[\frac{1-(1-\varepsilon)^{5/3}}{W}\right]^{1/3} (c_{p_f} G)^{1/3}
         \left(\frac{k_f}{d}\right)^{2/3}
         $$
 
-        where $W$ is given by:
+        where $W$ is given by
 
         $$
         W = 2-3(1-\varepsilon)^{1/3}+3(1-\varepsilon)^{5/3}-2(1-\varepsilon)^2
         $$
 
-        The lower limit of analytical heat transfer is given by:
+        The lower limit of analytical heat transfer is given by
 
         $$
         h_{part} = \frac{2k_f}{d}
         $$
 
-        for a heated isothermal sphere in a quiescent fluid medium.
+        for a heated isothermal sphere in a quiescent fluid medium; therefore, the maximum of the two values is taken.
 
         [^1]: R. Pfeffer, “Heat and mass transport in multiparticle systems,” Industrial & Engineering Chemistry
         Fundamentals, vol. 3, no. 4, pp. 380–383, 1964.
 
         Parameters:
-            k_f: Thermal conductivity of the fluid [W/m K].
-            cp_f: Specific heat capacity of the fluid [J/kg K].
-            G: Effective mass flow rate per unit of cross-section [kg/m^2 s].
-            eps: Void fraction [-].
-            d: Particle diameter [m].
+            k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
+            cp_f: Specific heat capacity of the fluid, $c_{p_f}$ [J/kg⋅K].
+            G: Effective mass flow rate per unit of cross-section, $G$ [kg/m^2^⋅s].
+            eps: Void fraction, $\varepsilon$.
+            d: Particle diameter, $d$ [m].
         """
-
         W = 2 - 3 * (1 - eps)**(1/3) + 3 * (1 - eps)**(5/3) - 2 * (1 - eps)**2
         h_part = np.max(
             1.26 * ((1 - (1 - eps)**(5/3)) / W)**(1/3) * (cp_f * G)**(1/3) * (k_f / d)**(2/3),  # Pfeffer's correlation
@@ -233,7 +229,7 @@ class PackedBedModel:
     @staticmethod
     def conv_wall_heat_transfer_coeff(k_f, Re_d, Pr, d):
         r"""
-        Returns the convective heat transfer coefficient between the fluid and the wall:
+        Returns the convective heat transfer coefficient between the fluid and the wall
 
         $$
         h_{wall}^{cv} = \left( 2.58 Re_d^{1/3} Pr^{1/3} + 0.094 Re_d^{0.8} Pr^{0.4} \right) \frac{k_f}{d}
@@ -245,11 +241,10 @@ class PackedBedModel:
         1962, pp. 203–271.
 
         Parameters:
-            k_f: Thermal conductivity of the fluid [W/m K].
-            Re_d: Reynolds number of the flow based on particle diameter.
-            Pr: Prandtl number of the flow.
-            d: Particle diameter [W].
-
+            k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
+            Re_d: Reynolds number of the flow based on particle diameter, $Re_d$.
+            Pr: Prandtl number of the flow, $Pr$.
+            d: Particle diameter, $d$ [m].
         """
         return (2.58 * Re_d**(1/3) * Pr**(1/3) + 0.094 * Re_d**0.8 * Pr**0.4) * k_f / d
 
@@ -270,25 +265,26 @@ class PackedBedModel:
         \frac{1-\varepsilon_{wall}}{\left(\frac{1}{\phi_{wall}}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{1}{3\kappa}}\right]
         $$
 
-        where the wall porosity ($\varepsilon_{wall}$) is assumed to be $0.4$ and $\phi_{wall}$ is given by
+        where the wall porosity, $\varepsilon_{wall}$, is assumed to be $0.4$ and $\phi_{wall}$ is given by
 
         $$
         \phi_{wall} = \frac{1}{4} \frac{\left(\frac{\kappa-1}{\kappa}\right)^2}{\ln{\kappa} - \frac{\kappa-1}{\kappa}} -
         \frac{1}{3\kappa}
         $$
 
+        where $\kappa = k_s/k_f$.
+
         [^1]: K. Ofuchi and D. Kunii, “Heat-transfer characteristics of packed beds with stagnant fluids,” International
         Journal of Heat and Mass Transfer, vol. 8, no. 5, pp. 749–757, 1965.
 
         Parameters:
-            k_f: Thermal conductivity of the fluid [W/m K].
-            k_s: Thermal conductivity of the solid [W/m K].
-            h_rv: void-to-void radiative heat transfer coefficient.
-            h_rs: Solid-to-solid radiative heat transfer coefficient
-            eps: Void fraction [-].
-            d: Particle diameter [m].
-            phi: Effective film thickness ratio.
-
+            k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
+            k_s: Thermal conductivity of the solid, $k_s$ [W/m⋅K].
+            h_rv: void-to-void radiative heat transfer coefficient, $h_{rv}$ [W/m^2^⋅K].
+            h_rs: Solid-to-solid radiative heat transfer coefficient, $h_{rs}$ [W/m^2^⋅K].
+            eps: Void fraction, $\varepsilon$.
+            d: Particle diameter, $d$ [m].
+            phi: Effective film thickness ratio, $\phi$.
         """
         kappa = k_s / k_f
         eps_wall = 0.4
@@ -309,7 +305,7 @@ class PackedBedModel:
     @staticmethod
     def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
         r"""
-        Modified Ergun's equation[^1]:
+        Calculates the pressure drop using the modified Ergun's equation[^1]
 
         $$
         \Delta P = \frac{\Delta z G^2}{\rho_f d} \left[ \xi_1 \frac{(1-\epsilon)^2}{\epsilon^3 \psi^2} \frac{\mu_f}{Gd}
@@ -320,15 +316,15 @@ class PackedBedModel:
         Industrial & Engineering Chemistry Fundamentals, vol. 18, no. 3, pp. 199–208, 1979.
 
         Parameters:
-            dz: Axial position step size [m].
-            rho_f: Density of the fluid [kg/m^3].
-            mu_f: Dynamic viscosity of the fluid [Pa s].
-            G: Effective mass flow rate per unit cross-section (kg/m^2 s).
-            eps: Void fraction [-].
-            d: Particle diameter [m].
-            psi: Sphericity [-].
-            xi1: Viscous loss coefficient.
-            xi2: Inertial loss coefficient.
+            dz: Axial position step size, $\Delta z$ [m].
+            rho_f: Density of the fluid, $\rho_f$ [kg/m^3^].
+            mu_f: Dynamic viscosity of the fluid, $\mu_f$ [Pa⋅s].
+            G: Effective mass flow rate per unit cross-section, $G$ [kg/m^2^⋅s].
+            eps: Void fraction, $\varepsilon$.
+            d: Particle diameter, $d$ [m].
+            psi: Sphericity, $\psi$.
+            xi1: Viscous loss coefficient, $\xi_1$.
+            xi2: Inertial loss coefficient, $\xi_2$.
 
         """
         return dz * G**2 / (rho_f * d) * (

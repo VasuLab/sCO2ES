@@ -6,6 +6,8 @@ theme:
   name: material
   icon:
     repo: fontawesome/brands/github
+  features:
+    - search.highlight
   palette:
 
     # Palette toggle for light mode
@@ -30,11 +32,11 @@ plugins:
     handlers:
       python:
         options:
-          docstring_section_style: table
+          docstring_section_style: list
           members_order: source
           show_root_toc_entry: False
           show_source: False
-          show_signature: False
+          show_signature: True
 
 watch:
   - packed_bed.py
@@ -44,6 +46,8 @@ markdown_extensions:
   - footnotes
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.caret
+  - pymdownx.tilde
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
