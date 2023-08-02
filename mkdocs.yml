@@ -1,0 +1,57 @@
+site_name: sCO2 Energy Storage
+repo_url: https://github.com/VasuLab/sCO2-energy-storage
+repo_name: VasuLab/sCO2-energy-storage
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+- search
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_section_style: table
+          members_order: source
+          show_root_toc_entry: False
+          show_source: False
+          show_signature: False
+
+watch:
+  - packed_bed.py
+
+markdown_extensions:
+  - attr_list
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
