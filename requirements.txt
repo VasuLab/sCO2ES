@@ -1,4 +1,7 @@
 CoolProp
 numpy
+numba
 matplotlib
-scipy
+mkdocs
+mkdocs-material
+mkdocstrings[python]
