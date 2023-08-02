@@ -65,7 +65,7 @@ class PackedBedModel:
         return h_v * d ** 2 / (36 * (1 - eps) * k_s)
 
     @staticmethod
-    def effective_film_thickness_ratio(k_s, k_f, eps):
+    def effective_film_thickness_ratio(k_f, k_s, eps):
         r"""
         Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
         particles and the particle diameter according to the interpolation of Kunii and Smith[^1] for
