@@ -43,6 +43,23 @@ class PackedBedModel:
             self.mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", self.T_f[i], "P", self.P[i], "CO2")
             self.cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
 
+    @jit(nopython=True, parallel=True)
+    def update_solid_props(self):
+        """
+        :material-lightning-bolt:{ .parallel } Parallelized
+
+        Updates the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
+
+        [^1]: M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
+        El Segundo/CA, 1975.
+        [^2]: "AETG/UC San Diego," [Online]. Available: www.ferp.ucsd.edu/LIB/PROPS/PANOS/al2o3.html
+        """
+        for i in prange(self.n):
+            T_star = (self.T_s[i] - 953.8151) / 432.1046
+            self.E_s[i] = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
+            self.k_s[i] = 85.686 - 0.22972 * self.T_s[i] + 2.607e-4 * self.T_s[i]**2 - 1.3607e-7 * self.T_s[i]**3 \
+                          + 2.7092e-11 * self.T_s[i]**4
+
     @staticmethod
     def biot_number(h_v, d, eps, k_s):
         r"""
