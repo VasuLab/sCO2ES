@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit, prange
 import CoolProp as CP
 
 
@@ -14,30 +15,64 @@ class PackedBedModel:
     def __init__(self, T):
         self.t = 0
         self.n = ...
+        self.d = ...
+        self.eps = ...
 
+        # State variables
         self.P = ...
         self.T_f = ...
+        self.T_s = ...
 
+        # Fluid properties
         self.k_f = ...
         self.rho_f = ...
         self.mu_f = ...
         self.cp_f = ...
 
-    def advance(self, t):
-        while self.t < t:
+        # Solid properties
+        self.k_s = ...
+        self.E_s = ...
+
+        # Field variables
+        self.phi = ...
+        self.h_v = ...
+        self.h_rv = ...
+        self.h_rs = ...
+        self.k_eff = ...
+
+    def advance(self):
+        """
+        The main solver loop.
+        """
+        while not self.stop():
+            Bi = self.biot_number(self.h_v, self.d, self.eps, self.k_s)
+            if not np.all(Bi <= 0.1):
+                raise Exception("Biot number exceeded acceptable threshold.")
+
             self.step()
 
-            ...
+    def stop(self) -> bool:
+        """A function that indicates when the solver should stop."""
+        ...
 
     def step(self):
         ...
 
-        self.update_props()
+        self.update_fluid_props()
+        self.update_solid_props()
+        self.update_fields()
 
         ...
 
-    def update_props(self):
-        for i in range(self.n):
+    @jit(nopython=True, parallel=True)
+    def update_fluid_props(self):
+        """
+        :material-lightning-bolt:{ .parallel } Parallelized
+
+        Updates the thermal conductivity, density, viscosity, and specific heat capacity of CO2 at each node
+        using CoolProp.
+        """
+        for i in prange(self.n):
             self.k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", self.T_f[i], "P", self.P[i], "CO2")
             self.rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
             self.mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", self.T_f[i], "P", self.P[i], "CO2")
@@ -59,6 +94,15 @@ class PackedBedModel:
             self.E_s[i] = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
             self.k_s[i] = 85.686 - 0.22972 * self.T_s[i] + 2.607e-4 * self.T_s[i]**2 - 1.3607e-7 * self.T_s[i]**3 \
                           + 2.7092e-11 * self.T_s[i]**4
+
+    def update_fields(self):
+        G = ...
+        self.h_v = self.volumetric_convective_heat_transfer_coeff(self.k_f, self.cp_f, G, self.eps, self.d)
+        self.h_rv = self.void_radiative_heat_transfer_coeff(self.T_f, self.eps, self.E_s)
+        self.h_rs = self.surface_radiative_heat_transfer_coeff(self.T_f, self.E_s)
+        self.phi = self.effective_film_thickness_ratio(self.k_f, self.k_s, self.eps)
+        self.k_eff = self.effective_thermal_conductivity(
+            self.k_f, self.k_s, self.eps, self.h_rv, self.h_rs, self.phi, self.d)
 
     @staticmethod
     def biot_number(h_v, d, eps, k_s):
