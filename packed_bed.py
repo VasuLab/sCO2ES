@@ -86,7 +86,6 @@ class PackedBedModel:
         ...
 
     @staticmethod
-    @jit(nopython=True, parallel=True)
     def calculate_fluid_props(T_f, P):
         """
         :material-lightning-bolt:{ .parallel } Parallelized
@@ -108,7 +107,7 @@ class PackedBedModel:
         rho_f = np.empty_like(T_f)
         mu_f = np.empty_like(T_f)
         cp_f = np.empty_like(T_f)
-        for i in prange(T_f.size):
+        for i in range(T_f.size):
             k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", T_f[i], "P", P[i], "CO2")
             rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", T_f[i], "P", P[i], "CO2")
             mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", T_f[i], "P", P[i], "CO2")
