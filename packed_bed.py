@@ -85,36 +85,62 @@ class PackedBedModel:
 
         ...
 
+    @staticmethod
     @jit(nopython=True, parallel=True)
-    def update_fluid_props(self):
+    def calculate_fluid_props(T_f, P):
         """
         :material-lightning-bolt:{ .parallel } Parallelized
 
-        Updates the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
+        Returns the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
         using [`CoolProp`](http://www.coolprop.org/).
-        """
-        for i in prange(self.n):
-            self.k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", self.T_f[i], "P", self.P[i], "CO2")
-            self.rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
-            self.mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", self.T_f[i], "P", self.P[i], "CO2")
-            self.cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", self.T_f[i], "P", self.P[i], "CO2")
 
+        Parameters:
+            T_f: Temperature of the fluid [K].
+            P: Pressure [Pa].
+
+        Returns:
+            k_f: Thermal conductivity of the fluid [W/m⋅K].
+            rho_f: Density of the fluid [kg/m^3^].
+            mu_f: Dynamic viscosity of the fluid [Pa⋅s].
+            cp_f: Specific heat capacity of the fluid [J/kg⋅K].
+        """
+        k_f = np.empty_like(T_f)
+        rho_f = np.empty_like(T_f)
+        mu_f = np.empty_like(T_f)
+        cp_f = np.empty_like(T_f)
+        for i in prange(T_f.size):
+            k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", T_f[i], "P", P[i], "CO2")
+            rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", T_f[i], "P", P[i], "CO2")
+            mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", T_f[i], "P", P[i], "CO2")
+            cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", T_f[i], "P", P[i], "CO2")
+        return k_f, rho_f, mu_f, cp_f
+
+    @staticmethod
     @jit(nopython=True, parallel=True)
-    def update_solid_props(self):
+    def calculate_solid_props(T_s):
         """
         :material-lightning-bolt:{ .parallel } Parallelized
 
-        Updates the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
+        Returns the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
 
         [^1]: M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
         El Segundo/CA, 1975.
         [^2]: "AETG/UC San Diego," [Online]. Available: www.ferp.ucsd.edu/LIB/PROPS/PANOS/al2o3.html
+
+        Parameters:
+            T_s: Temperature of the solid [K].
+
+        Returns:
+            E_s: Emissivity of the solid.
+            k_s: Thermal conductivity of the solid [W/m⋅K].
         """
-        for i in prange(self.n):
-            T_star = (self.T_s[i] - 953.8151) / 432.1046
-            self.E_s[i] = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
-            self.k_s[i] = 85.686 - 0.22972 * self.T_s[i] + 2.607e-4 * self.T_s[i]**2 - 1.3607e-7 * self.T_s[i]**3 \
-                          + 2.7092e-11 * self.T_s[i]**4
+        E_s = np.empty_like(T_s)
+        k_s = np.empty_like(T_s)
+        for i in prange(T_s.size):
+            T_star = (T_s[i] - 953.8151) / 432.1046
+            E_s[i] = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
+            k_s[i] = 85.686 - 0.22972 * T_s[i] + 2.607e-4 * T_s[i]**2 - 1.3607e-7 * T_s[i]**3 + 2.7092e-11 * T_s[i]**4
+        return E_s, k_s
 
     def update_fields(self):
         G = ...
