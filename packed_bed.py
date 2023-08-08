@@ -12,6 +12,27 @@ class PackedBedModel:
     183, p. 116032, 2021.
     """
 
+    atol_T_f = 0.05
+    """Absolute tolerance for fluid temperature [ºC]."""
+    atol_P = 0.1
+    """Absolute tolerance for pressure [Pa]."""
+    atol_T_s = 0.05
+    """Absolute tolerance for solid temperature [ºC]."""
+
+    rtol_i_f = 0.01
+    """Relative tolerance for fluid enthalpy."""
+    rtol_rho_f = 0.1
+    """Relative tolerance for fluid density."""
+    rtol_m_dot = 0.1
+    """Relative tolerance for mass flow rate."""
+    rtol_h = 0.1
+    """Relative tolerance for volumetric and wall heat transfer coefficients."""
+    rtol_T_wall = 0.05
+    """Relative tolerance for wall and lid temperatures."""
+
+    max_iter = 100
+    """Maximum number of iterations for the loop."""
+
     def __init__(self, T):
         self.t = 0
         self.n = ...
