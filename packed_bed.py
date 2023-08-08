@@ -69,8 +69,8 @@ class PackedBedModel:
         """
         :material-lightning-bolt:{ .parallel } Parallelized
 
-        Updates the thermal conductivity, density, viscosity, and specific heat capacity of CO2 at each node
-        using CoolProp.
+        Updates the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
+        using [`CoolProp`](http://www.coolprop.org/).
         """
         for i in prange(self.n):
             self.k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", self.T_f[i], "P", self.P[i], "CO2")
@@ -370,7 +370,7 @@ class PackedBedModel:
 
         $$
         \Delta P = \frac{\Delta z G^2}{\rho_f d} \left[ \xi_1 \frac{(1-\epsilon)^2}{\epsilon^3 \psi^2} \frac{\mu_f}{Gd}
-        + \xi_2 frac{(1-\epsilon)}{\epsilon^3 \psi}\right]
+        + \xi_2 \frac{(1-\epsilon)}{\epsilon^3 \psi}\right]
         $$
 
         [^1]: I. Macdonald, M. El-Sayed, K. Mow, and F. Dullien, “Flow through porous media-the Ergun equation revisited,”
