@@ -172,6 +172,18 @@ class PackedBedModel:
         return h_v * d ** 2 / (36 * (1 - eps) * k_s)
 
     @staticmethod
+    def effective_mass_flow_rate(m_dot, eps, D):
+        """
+        Returns the effective mass flow rate per unit area [kg/m^2^⋅s].
+
+        Parameters:
+            m_dot: Mass flow rate [kg/s].
+            eps: Void fraction.
+            D: Diameter [m].
+        """
+        return 4 * m_dot / (eps * np.pi * D**2)
+
+    @staticmethod
     def effective_film_thickness_ratio(k_f, k_s, eps):
         r"""
         Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
