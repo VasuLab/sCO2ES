@@ -88,8 +88,6 @@ class PackedBedModel:
     @staticmethod
     def calculate_fluid_props(T_f, P):
         """
-        :material-lightning-bolt:{ .parallel } Parallelized
-
         Returns the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
         using [`CoolProp`](http://www.coolprop.org/).
 
@@ -118,8 +116,6 @@ class PackedBedModel:
     @jit(nopython=True, parallel=True)
     def calculate_solid_props(T_s):
         """
-        :material-lightning-bolt:{ .parallel } Parallelized
-
         Returns the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
 
         [^1]: M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
@@ -133,12 +129,9 @@ class PackedBedModel:
             E_s: Emissivity of the solid.
             k_s: Thermal conductivity of the solid [W/m⋅K].
         """
-        E_s = np.empty_like(T_s)
-        k_s = np.empty_like(T_s)
-        for i in prange(T_s.size):
-            T_star = (T_s[i] - 953.8151) / 432.1046
-            E_s[i] = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
-            k_s[i] = 85.686 - 0.22972 * T_s[i] + 2.607e-4 * T_s[i]**2 - 1.3607e-7 * T_s[i]**3 + 2.7092e-11 * T_s[i]**4
+        T_star = (T_s - 953.8151) / 432.1046
+        E_s = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
+        k_s = 85.686 - 0.22972 * T_s + 2.607e-4 * T_s**2 - 1.3607e-7 * T_s**3 + 2.7092e-11 * T_s**4
         return E_s, k_s
 
     def update_fields(self):
