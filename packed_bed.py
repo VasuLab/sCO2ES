@@ -432,7 +432,7 @@ class PackedBedModel:
         return k_stag_eff * k_stag_wall / (k_stag_eff - k_stag_wall / 2)
 
     @staticmethod
-    def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, xi1, xi2):
+    def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, *, xi1: float = 180, xi2: float = 1.8):
         r"""
         Calculates the pressure drop using the modified Ergun's equation[^1]
 
