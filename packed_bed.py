@@ -383,6 +383,12 @@ class PackedBedModel:
         Calculates the conductive and radiative wall heat transfer coefficient according to Ofuchi and Kunii[^1]
 
         $$
+        h_{wall}^{cd,ra} = \frac{k_{eff}^{stag} k_{wall}^{stag}}{k_{eff}^{stag} - \frac{k_{wall}^{stag}}{2}}
+        $$
+
+        where
+
+        $$
         k_{eff}^{stag} = k_f \left[\varepsilon \left(1 + \frac{h_{rv}d}{k_f}\right) +
         \frac{1-\varepsilon}{\left(\frac{1}{\phi}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{2}{3\kappa}}\right]
         $$
