@@ -172,18 +172,6 @@ class PackedBedModel:
         return h_v * d ** 2 / (36 * (1 - eps) * k_s)
 
     @staticmethod
-    def effective_mass_flow_rate(m_dot, eps, D):
-        """
-        Returns the effective mass flow rate per unit area [kg/m^2^⋅s].
-
-        Parameters:
-            m_dot: Mass flow rate [kg/s].
-            eps: Void fraction.
-            D: Diameter [m].
-        """
-        return 4 * m_dot / (eps * np.pi * D**2)
-
-    @staticmethod
     def effective_film_thickness_ratio(k_f, k_s, eps):
         r"""
         Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
@@ -297,7 +285,7 @@ class PackedBedModel:
         )
 
     @staticmethod
-    def volumetric_convective_heat_transfer_coeff(k_f, cp_f, G, eps, d):
+    def volumetric_convective_heat_transfer_coeff(m_dot, k_f, cp_f, eps, d, D):
         r"""
         Calculates the volumetric convective heat transfer coefficient as the product of the convective heat
         transfer coefficient for a spherical particle and the ratio between the particles total heat transfer area
@@ -320,6 +308,12 @@ class PackedBedModel:
         W = 2-3(1-\varepsilon)^{1/3}+3(1-\varepsilon)^{5/3}-2(1-\varepsilon)^2
         $$
 
+        and $G$ is the effective mass flow rate per unit area given by
+
+        $$
+        G = \frac{4\dot{m}}{\varepsilon \pi D^2}
+        $$
+
         The lower limit of analytical heat transfer is given by
 
         $$
@@ -332,12 +326,14 @@ class PackedBedModel:
         Fundamentals, vol. 3, no. 4, pp. 380–383, 1964.
 
         Parameters:
+            m_dot: Mass flow rate [kg/s].
             k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
             cp_f: Specific heat capacity of the fluid, $c_{p_f}$ [J/kg⋅K].
-            G: Effective mass flow rate per unit of cross-section, $G$ [kg/m^2^⋅s].
             eps: Void fraction, $\varepsilon$.
             d: Particle diameter, $d$ [m].
+            D: Diameter [m].
         """
+        G = 4 * m_dot / (eps * np.pi * D**2)
         W = 2 - 3 * (1 - eps)**(1/3) + 3 * (1 - eps)**(5/3) - 2 * (1 - eps)**2
         h_part = np.max(
             1.26 * ((1 - (1 - eps)**(5/3)) / W)**(1/3) * (cp_f * G)**(1/3) * (k_f / d)**(2/3),  # Pfeffer's correlation
