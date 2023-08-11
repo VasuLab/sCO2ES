@@ -342,7 +342,7 @@ class PackedBedModel:
         return h_part * 6 * (1 - eps) / d
 
     @staticmethod
-    def conv_wall_heat_transfer_coeff(k_f, Re_d, Pr, d):
+    def conv_wall_heat_transfer_coeff(m_dot, k_f, cp_f, mu_f, d, D):
         r"""
         Returns the convective heat transfer coefficient between the fluid and the wall
 
@@ -350,17 +350,38 @@ class PackedBedModel:
         h_{wall}^{cv} = \left( 2.58 Re_d^{1/3} Pr^{1/3} + 0.094 Re_d^{0.8} Pr^{0.4} \right) \frac{k_f}{d}
         $$
 
-        according to the correlation of Beek[^1].
+        according to the correlation of Beek[^1]. The Reynolds number $Re_d$ is defined as
+
+        $$
+        Re_d = \frac{\rho_f u_0 d}{\mu_f}
+        $$
+
+        where $u_0$ is the superficial velocity, or the velocity if no particles were present, given by
+
+        $$
+        u_0 = \frac{\dot{m}}{\rho_f A}
+        $$
+
+        The Prandtl number $Pr$ is defined as
+
+        $$
+        Pr = \frac{{c_p}_f \mu_f}{k_f}
+        $$
 
         [^1]: J. Beek, “Design of packed catalytic reactors,” in Advances in Chemical Engineering, Elsevier,
         1962, pp. 203–271.
 
         Parameters:
+            m_dot: Mass flow rate, $\dot{m}$ [kg/s].
             k_f: Thermal conductivity of the fluid, $k_f$ [W/m⋅K].
-            Re_d: Reynolds number of the flow based on particle diameter, $Re_d$.
-            Pr: Prandtl number of the flow, $Pr$.
+            cp_f: Specific heat capacity of the fluid, ${c_p}_f$ [J/kg⋅K].
+            mu_f: Dynamic viscosity of the fluid, $\mu_f$ [Pa⋅s].
             d: Particle diameter, $d$ [m].
+            D: Diameter, $D$ [m].
         """
+        Re_d = d * m_dot / (mu_f * np.pi * D**2 / 4)
+        Pr = cp_f * mu_f / k_f
+
         return (2.58 * Re_d**(1/3) * Pr**(1/3) + 0.094 * Re_d**0.8 * Pr**0.4) * k_f / d
 
     @staticmethod
