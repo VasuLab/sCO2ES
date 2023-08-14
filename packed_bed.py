@@ -85,6 +85,36 @@ class PackedBedModel:
 
         ...
 
+    def calculate_heat_transfer_coeffs(self, m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s):
+        """
+        Calculates the relevant heat transfer coefficients for the packed bed.
+
+        Parameters:
+            m_dot: Mass flow rate [kg/s].
+            T_f: Temperature of the fluid [K].
+            k_f: Thermal conductivity of the fluid [W/m⋅K].
+            cp_f: Specific heat capacity of the fluid [J/kg⋅K].
+            mu_f: Dynamic viscosity of the fluid [Pa⋅s].
+            k_s: Thermal conductivity of the solid [W/m⋅K].
+            E_s: Emissivity of the solid.
+
+        Returns:
+            h_v: Volumetric heat transfer coefficient [].
+            k_eff: Effective thermal conductivity [W/m⋅K].
+            h_wall: Wall heat transfer coefficient [].
+        """
+        h_v = self.volumetric_convective_heat_transfer_coeff(m_dot, k_f, cp_f, self.eps, self.d, self.D)
+        h_rv = self.void_radiative_heat_transfer_coeff(T_f, self.eps, E_s)
+        h_rs = self.surface_radiative_heat_transfer_coeff(T_f, E_s)
+        phi = self.effective_film_thickness_ratio(k_f, k_s, self.eps)
+        k_eff = self.effective_thermal_conductivity(k_f, k_s, self.eps, h_rv, h_rs, phi, self.d)
+        h_wall = (
+            self.conv_wall_heat_transfer_coeff(m_dot, k_f, cp_f, mu_f, self.d, self.D)
+            + self.cond_rad_wall_heat_transfer_coeff(k_f, k_s, h_rv, h_rs, self.eps, self.d, phi)
+        )
+
+        return h_v, k_eff, h_wall
+
     @staticmethod
     def calculate_fluid_props(T_f, P):
         """
@@ -133,15 +163,6 @@ class PackedBedModel:
         E_s = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
         k_s = 85.686 - 0.22972 * T_s + 2.607e-4 * T_s**2 - 1.3607e-7 * T_s**3 + 2.7092e-11 * T_s**4
         return E_s, k_s
-
-    def update_fields(self):
-        G = ...
-        self.h_v = self.volumetric_convective_heat_transfer_coeff(self.k_f, self.cp_f, G, self.eps, self.d)
-        self.h_rv = self.void_radiative_heat_transfer_coeff(self.T_f, self.eps, self.E_s)
-        self.h_rs = self.surface_radiative_heat_transfer_coeff(self.T_f, self.E_s)
-        self.phi = self.effective_film_thickness_ratio(self.k_f, self.k_s, self.eps)
-        self.k_eff = self.effective_thermal_conductivity(
-            self.k_f, self.k_s, self.eps, self.h_rv, self.h_rs, self.phi, self.d)
 
     @staticmethod
     def biot_number(h_v, d, eps, k_s):
