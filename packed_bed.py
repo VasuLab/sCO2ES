@@ -73,7 +73,6 @@ class PackedBedModel:
         self.n = n
         self.dz = L / n
         self.t = np.array([0])
-
         self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
 
         # Packed bed parameters
@@ -84,11 +83,25 @@ class PackedBedModel:
         # Wall/lid parameters
         self.T_env = T_env
 
+        if isinstance(n_wall, int):
+            n_wall = np.full(len(t_wall), n_wall)
+
+        r = 0
+        dr = []
+        for i in range(len(t_wall)):
+            dr.append(r + t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i])))
+            r += t_wall[i]
+
+        dr = np.array(dr).flatten()
+        self.r_wall = self.D / 2 + dr
+        self.z_top_lid = -dr
+        self.z_bottom_lid = L + dr
+
         self.k_wall = np.asarray(k_wall, dtype=float)
         self.rho_wall = np.asarray(rho_wall, dtype=float)
         self.cp_wall = np.asarray(cp_wall, dtype=float)
 
-        # assert self.r_wall.size == self.k_wall.size == self.rho_wall.size == self.cp_wall.size
+        assert self.k_wall.size == self.rho_wall.size == self.cp_wall.size
 
         # State variables
         self.P = np.full((1, n), P)
