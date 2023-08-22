@@ -399,10 +399,10 @@ class PackedBedModel:
         """
         G = 4 * m_dot / (eps * np.pi * D**2)
         W = 2 - 3 * (1 - eps)**(1/3) + 3 * (1 - eps)**(5/3) - 2 * (1 - eps)**2
-        h_part = np.max(
+        h_part = np.max([
             1.26 * ((1 - (1 - eps)**(5/3)) / W)**(1/3) * (cp_f * G)**(1/3) * (k_f / d)**(2/3),  # Pfeffer's correlation
             2 * k_f / d  # Lower limit
-        )
+        ])
         return h_part * 6 * (1 - eps) / d
 
     @staticmethod
