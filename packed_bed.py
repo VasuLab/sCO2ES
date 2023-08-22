@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 from numba import jit, prange
 import CoolProp as CP
 
@@ -33,33 +34,82 @@ class PackedBedModel:
     max_iter = 100
     """Maximum number of iterations for the loop."""
 
-    def __init__(self, T):
-        self.t = 0
-        self.n = ...
-        self.d = ...
-        self.eps = ...
+    def __init__(
+            self,
+            T_d: float,
+            P: float,
+            L: float,
+            D: float,
+            d: float,
+            eps: float,
+            rho_s: float,
+            T_env: float,
+            t_wall: npt.ArrayLike,
+            k_wall: npt.ArrayLike,
+            rho_wall: npt.ArrayLike,
+            cp_wall: npt.ArrayLike,
+            *,
+            n: int = 100,
+            n_wall: int | npt.ArrayLike = 10):
+        """
+        Parameters:
+            T_d: Discharge temperature [K].
+            P: Initial pressure [Pa].
+            L: Domain length [m].
+            D: Internal tank diameter [m].
+            d: Particle diameter [m].
+            eps: Void fraction.
+            rho_s: Density of the solid [kg/m^3^].
+            T_env: Temperature of the environment [K].
+            t_wall: Thickness of each wall layer [m].
+            k_wall: Thermal conductivity of each wall layer [W/m⋅K].
+            rho_wall: Density of each wall layer [kg/m^3^].
+            cp_wall: Specific heat capacity of each wall layer [J/kg⋅K].
+            n: Number of axial nodes.
+            n_wall: Number of nodes for each wall layer.
+        """
+
+        # Simulation parameters
+        self.n = n
+        self.dz = L / n
+        self.t = np.array([0])
+
+        self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
+
+        # Packed bed parameters
+        self.D = D
+        self.d = d
+        self.eps = eps
+
+        # Wall/lid parameters
+        self.T_env = T_env
+
+        self.k_wall = np.asarray(k_wall)
+        self.rho_wall = np.asarray(rho_wall)
+        self.cp_wall = np.asarray(cp_wall)
+
+        # assert self.r_wall.size == self.k_wall.size == self.rho_wall.size == self.cp_wall.size
 
         # State variables
-        self.P = ...
-        self.T_f = ...
-        self.T_s = ...
+        self.P = np.full((1, n), P)
+        self.T_f = np.full((1, n), T_d)
+        self.T_s = np.full((1, n), T_d)
 
-        # Fluid properties
-        self.k_f = ...
-        self.rho_f = ...
-        self.mu_f = ...
-        self.cp_f = ...
+        self.T_wall = np.empty((1, n, n_wall))
+        self.T_lid = np.empty((1, n_wall))
 
-        # Solid properties
-        self.k_s = ...
-        self.E_s = ...
+        # Property variables
+        self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
+        self.i_f = ...
+        self.rho_s = rho_s
+        self.k_s, self.E_s = self.calculate_solid_props(self.T_s[0])
 
         # Field variables
-        self.phi = ...
-        self.h_v = ...
-        self.h_rv = ...
-        self.h_rs = ...
-        self.k_eff = ...
+        self.m_dot = np.zeros(n)  # Initially stationary
+        self.h_v, self.k_eff, self.h_wall = self.calculate_heat_transfer_coeffs(
+            self.m_dot, self.T_f, self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+
+        # Initialize wall/lid temperature distribution
 
     def advance(self):
         """
