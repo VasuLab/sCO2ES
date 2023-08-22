@@ -84,19 +84,19 @@ class PackedBedModel:
         # Wall/lid parameters
         self.T_env = T_env
 
-        self.k_wall = np.asarray(k_wall)
-        self.rho_wall = np.asarray(rho_wall)
-        self.cp_wall = np.asarray(cp_wall)
+        self.k_wall = np.asarray(k_wall, dtype=float)
+        self.rho_wall = np.asarray(rho_wall, dtype=float)
+        self.cp_wall = np.asarray(cp_wall, dtype=float)
 
         # assert self.r_wall.size == self.k_wall.size == self.rho_wall.size == self.cp_wall.size
 
         # State variables
         self.P = np.full((1, n), P)
-        self.T_f = np.full((1, n), T_d)
-        self.T_s = np.full((1, n), T_d)
+        self.T_f = np.full((1, n), T_d, dtype=float)
+        self.T_s = np.full((1, n), T_d, dtype=float)
 
-        self.T_wall = np.empty((1, n, n_wall))
-        self.T_lid = np.empty((1, n_wall))
+        self.T_wall = np.empty((1, n, n_wall), dtype=float)
+        self.T_lid = np.empty((1, n_wall), dtype=float)
 
         # Property variables
         self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
