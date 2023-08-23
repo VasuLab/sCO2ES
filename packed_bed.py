@@ -114,19 +114,26 @@ class PackedBedModel:
         self.T_bottom_lid = np.empty((1, np.sum(n_wall)), dtype=float)
 
         # Calculate heat flux through lid and walls
-        R_lid = (1 / (self.h_wall[0] * np.pi * D**2 / 4) + np.sum(t_wall / k_wall))  # Convection/conduction resistance
-        Q_lid = (T_d - T_env) / R_lid  # Heat flux through the lid
-        T_lid_inner = T_d - Q_lid / (self.h_wall[0] * np.pi * D**2 / 4)  # Inner tank wall surface temperature
+        R_lid = t_wall / k_wall  # Convection/conduction resistance
+        Q_lid = (T_d - T_env) / np.sum(R_lid)  # Heat flux through the lid
+        T_lid_bound = np.array([T_d, *(T_d - np.add.accumulate(Q_lid * R_lid))])
+
+        x_bound = np.array([0, *np.add.accumulate(t_wall)])
+        r_bound = D/2 + x_bound
+        R_wall = np.log(r_bound[1:] / r_bound[:-1]) / (2 * np.pi * k_wall * L)
+        Q_wall = (T_d - T_env) / np.sum(R_wall)
+        T_wall_bound = [T_d, *(T_d - np.add.accumulate(Q_wall * R_wall))]
 
         # Calculate coordinates and temperature profiles for walls and lids
-        x_bound = [0, *np.add.accumulate(t_wall)]
-        T_lid_bound = [T_lid_inner, *(T_lid_inner - np.add.accumulate(Q_lid * t_wall / k_wall))]
 
+        T_wall = []
         T_lid = []
         x = []
 
         for i in range(n_wall.size):
             dx = t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i]))
+            T_wall.append(T_wall_bound[i] -
+                          Q_wall * np.log(1 + dx / r_bound[i]) / (2 * np.pi * L * k_wall[i]))
             T_lid.append(T_lid_bound[i] + np.diff(T_lid_bound)[i] * dx / t_wall[i])
             x.append(x_bound[i] + dx)
 
@@ -136,8 +143,10 @@ class PackedBedModel:
         self.z_bottom_lid = L + x
 
         T_lid = np.array(T_lid).flatten()
+        T_wall = np.array(T_wall).flatten()
         self.T_top_lid[0] = T_lid[::-1]
         self.T_bottom_lid[0] = T_lid
+        self.T_wall[0] = T_wall
 
         # Fill wall/lid properties
         self.k_wall = np.repeat(k_wall, n_wall)
