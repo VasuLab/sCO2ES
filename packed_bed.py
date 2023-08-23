@@ -20,6 +20,8 @@ class PackedBedModel:
     atol_T_s = 0.05
     """Absolute tolerance for solid temperature [ºC]."""
 
+    rtol_T_wall = 0.05
+    """Relative tolerance for wall and lid temperatures."""
     rtol_i_f = 0.01
     """Relative tolerance for fluid enthalpy."""
     rtol_rho_f = 0.1
@@ -28,8 +30,6 @@ class PackedBedModel:
     """Relative tolerance for mass flow rate."""
     rtol_h = 0.1
     """Relative tolerance for volumetric and wall heat transfer coefficients."""
-    rtol_T_wall = 0.05
-    """Relative tolerance for wall and lid temperatures."""
 
     max_iter = 100
     """Maximum number of iterations for the loop."""
@@ -80,41 +80,10 @@ class PackedBedModel:
         self.d = d
         self.eps = eps
 
-        # Wall/lid parameters
-        self.T_env = T_env
-
-        k_wall = np.asarray(k_wall, dtype=float)
-        rho_wall = np.asarray(rho_wall, dtype=float)
-        cp_wall = np.asarray(cp_wall, dtype=float)
-        if isinstance(n_wall, int):
-            n_wall = np.full(len(t_wall), n_wall)
-
-        assert k_wall.size == rho_wall.size == cp_wall.size == n_wall.size
-
-        # Calculate wall/lid coordinates
-        r = 0
-        dr = []
-        for i in range(len(t_wall)):
-            dr.append(r + t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i])))
-            r += t_wall[i]
-
-        dr = np.array(dr).flatten()
-        self.r_wall = self.D / 2 + dr
-        self.z_top_lid = -dr
-        self.z_bottom_lid = L + dr
-
-        # Fill wall/lid properties
-        self.k_wall = np.repeat(k_wall, n_wall)
-        self.rho_wall = np.repeat(rho_wall, n_wall)
-        self.cp_wall = np.repeat(cp_wall, n_wall)
-
         # State variables
         self.P = np.full((1, n), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
         self.T_s = np.full((1, n), T_d, dtype=float)
-
-        self.T_wall = np.empty((1, n, n_wall), dtype=float)
-        self.T_lid = np.empty((1, n_wall), dtype=float)
 
         # Property variables
         self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
@@ -125,9 +94,55 @@ class PackedBedModel:
         # Field variables
         self.m_dot = np.zeros(n)  # Initially stationary
         self.h_v, self.k_eff, self.h_wall = self.calculate_heat_transfer_coeffs(
-            self.m_dot, self.T_f, self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+            self.m_dot, self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+
+        # Wall/lid parameters
+        self.T_env = T_env
+
+        t_wall = np.asarray(t_wall, dtype=float)
+        k_wall = np.asarray(k_wall, dtype=float)
+        rho_wall = np.asarray(rho_wall, dtype=float)
+        cp_wall = np.asarray(cp_wall, dtype=float)
+
+        assert t_wall.size == k_wall.size == rho_wall.size == cp_wall.size
+        if isinstance(n_wall, int):
+            n_wall = np.full(t_wall.shape, n_wall)
 
         # Initialize wall/lid temperature distribution
+        self.T_wall = np.empty((1, n, np.sum(n_wall)), dtype=float)
+        self.T_top_lid = np.empty((1, np.sum(n_wall)), dtype=float)
+        self.T_bottom_lid = np.empty((1, np.sum(n_wall)), dtype=float)
+
+        # Calculate heat flux through lid and walls
+        R_lid = (1 / (self.h_wall[0] * np.pi * D**2 / 4) + np.sum(t_wall / k_wall))  # Convection/conduction resistance
+        Q_lid = (T_d - T_env) / R_lid  # Heat flux through the lid
+        T_lid_inner = T_d - Q_lid / (self.h_wall[0] * np.pi * D**2 / 4)  # Inner tank wall surface temperature
+
+        # Calculate coordinates and temperature profiles for walls and lids
+        x_bound = [0, *np.add.accumulate(t_wall)]
+        T_lid_bound = [T_lid_inner, *(T_lid_inner - np.add.accumulate(Q_lid * t_wall / k_wall))]
+
+        T_lid = []
+        x = []
+
+        for i in range(n_wall.size):
+            dx = t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i]))
+            T_lid.append(T_lid_bound[i] + np.diff(T_lid_bound)[i] * dx / t_wall[i])
+            x.append(x_bound[i] + dx)
+
+        x = np.array(x).flatten()
+        self.r_wall = self.D / 2 + x
+        self.z_top_lid = -x[::-1]
+        self.z_bottom_lid = L + x
+
+        T_lid = np.array(T_lid).flatten()
+        self.T_top_lid[0] = T_lid[::-1]
+        self.T_bottom_lid[0] = T_lid
+
+        # Fill wall/lid properties
+        self.k_wall = np.repeat(k_wall, n_wall)
+        self.rho_wall = np.repeat(rho_wall, n_wall)
+        self.cp_wall = np.repeat(cp_wall, n_wall)
 
     def advance(self):
         """
