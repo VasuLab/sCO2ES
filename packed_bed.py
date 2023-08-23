@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import jit, prange
+from matplotlib import pyplot as plt
 import CoolProp as CP
 
 
@@ -71,6 +72,7 @@ class PackedBedModel:
 
         # Simulation parameters
         self.n = n
+        self.L = L
         self.dz = L / n
         self.t = np.array([0])
         self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
@@ -579,3 +581,52 @@ class PackedBedModel:
                 xi1 * (1 - eps)**2 * mu_f / (eps**3 * psi**2 * G * d)  # Viscous loss
                 + xi2 * (1 - eps) / (eps**3 * psi)  # Inertial loss
         )
+
+    def plot_temperature_contour(self, ax=None):
+        """
+        Plots the temperature contour of the solid phase and tank walls/lids on the given Matplotlib axes object,
+        `ax` (if not given, a new figure is created).
+        """
+        if ax is None:
+            _, ax = plt.subplots()
+
+        r = np.array([*(-self.r_wall[::-1]), -self.D / 2, self.D / 2, *self.r_wall])
+        z = np.array([*self.z_top_lid, *self.z, *self.z_bottom_lid])
+
+        r, z = np.meshgrid(r, z)
+        T = np.full_like(r, np.nan)
+
+        # Fluid temperature
+        wall_nodes = self.r_wall.size
+        T[wall_nodes:-wall_nodes, wall_nodes:-wall_nodes] = np.tile(self.T_s[-1], (2, 1)).T
+
+        # Wall temperature
+        T[wall_nodes:-wall_nodes, -wall_nodes:] = self.T_wall[-1]
+        T[wall_nodes:-wall_nodes, wall_nodes - 1::-1] = self.T_wall[-1]
+
+        # Lid temperature
+        T[:wall_nodes, wall_nodes:-wall_nodes] = np.tile(self.T_top_lid[-1], (2, 1)).T
+        T[-wall_nodes:, wall_nodes:-wall_nodes] = np.tile(self.T_bottom_lid[-1], (2, 1)).T
+
+        # Plot
+        plt.contourf(r, z, T - 273, levels=100)
+
+        # Draw boundaries
+        plt.axvline(0, color="black", linestyle="--", alpha=0.75)
+
+        plt.axvline(self.D / 2, color="black", alpha=0.75)
+        plt.axvline(-self.D / 2, color="black", alpha=0.75)
+        plt.axhline(0, color="black", alpha=0.75)
+        plt.axhline(self.L, color="black", alpha=0.75)
+
+        # Format plot
+        plt.xlim(-self.r_wall.max(), self.r_wall.max())
+        plt.ylim(self.z_bottom_lid.max(), self.z_top_lid.min())
+
+        cbar = plt.colorbar()
+        cbar.set_label("Temperature [°C]")
+        ax.set_ylabel("Axial distance [m]")
+        ax.set_xlabel("Radial distance [m]")
+
+        ax.set_facecolor("black")
+
