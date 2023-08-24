@@ -91,7 +91,7 @@ class PackedBedModel:
         self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
         self.i_f = ...
         self.rho_s = rho_s
-        self.k_s, self.E_s = self.calculate_solid_props(self.T_s[0])
+        self.E_s, self.k_s = self.calculate_solid_props(self.T_s[0])
 
         # Field variables
         self.m_dot = np.zeros(n)  # Initially stationary
