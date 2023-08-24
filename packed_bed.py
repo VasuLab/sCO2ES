@@ -174,14 +174,80 @@ class PackedBedModel:
         """A function that indicates when the solver should stop."""
         ...
 
-    def step(self):
-        ...
+    @jit(nopython=True, parallel=True)
+    def step(self, dt):
+        """
+        Calculates the state of the packed bed at the next time step using an iterative algorithm.
+        """
 
-        self.update_fluid_props()
-        self.update_solid_props()
-        self.update_fields()
+        t = self.t[-1] + dt
 
-        ...
+        # Previous iteration state arrays
+        P_prev = np.copy(self.P[-1])
+        T_f_prev = np.copy(self.T_f[-1])
+        T_s_prev = np.copy(self.T_s[-1])
+        T_wall_prev = np.copy(self.T_wall[-1])
+        T_top_lid_prev = np.copy(self.T_top_lid[-1])
+        T_bottom_lid_prev = np.copy(self.T_bottom_lid[-1])
+        i_f_prev = np.copy(self.i_f)
+        rho_f_prev = np.copy(self.rho_f)
+        m_dot_prev = np.copy(self.m_dot)
+        h_v_prev = np.copy(self.h_v)
+        h_wall_prev = np.copy(self.h_wall)
+
+        # Next iteration state arrays
+        P = np.copy(self.P[-1])
+        T_f = np.copy(self.T_f[-1])
+        T_s = np.copy(self.T_s[-1])
+        T_wall = np.copy(self.T_wall[-1])
+        T_top_lid = np.copy(self.T_top_lid[-1])
+        T_bottom_lid = np.copy(self.T_bottom_lid[-1])
+        i_f = np.copy(self.i_f)
+        rho_f = np.copy(self.rho_f)
+        m_dot = np.copy(self.m_dot)
+        h_v = np.copy(self.h_v)
+        h_wall = np.copy(self.h_wall)
+
+        for b in range(self.max_iter):
+            k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(T_f, P)
+            E_s, k_s = self.calculate_solid_props(T_s)
+            h_v, k_eff, h_wall = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
+
+            # Calculate next state
+            ...
+
+            # Check convergence
+            converged = np.all([
+                np.abs(P - P_prev) <= self.atol_P,
+                np.abs(T_f - T_f_prev) <= self.atol_T_f,
+                np.abs(T_s - T_s_prev) <= self.atol_T_s,
+                np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall,
+                np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid,
+                np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid,
+                np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f,
+                np.abs(rho_f - rho_f_prev) <= self.rtol_rho_f * rho_f,
+                np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot,
+                np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot,
+                np.abs(h_v - h_v_prev) <= self.rtol_h * h_v,
+                np.abs(h_wall - h_wall_prev) <= self.rtol_h * h_wall,
+            ])
+
+            if converged:
+                self.t = np.append(self.t, t)
+                self.P = np.append(self.P, [P], axis=0)
+                self.T_f = np.append(self.T_f, [T_f], axis=0)
+                self.T_s = np.append(self.T_s, [T_s], axis=0)
+                self.T_wall = np.append(self.T_wall, [T_wall], axis=0)
+                self.T_top_lid = np.append(self.T_top_lid, [T_top_lid], axis=0)
+                self.T_bottom_lid = np.append(self.T_bottom_lid, [T_bottom_lid], axis=0)
+                self.i_f = i_f
+                self.rho_f = rho_f
+                self.m_dot = m_dot
+                self.h_v = h_v
+                self.h_wall = h_wall
+                return
+
+        raise Exception("Maximum number of iterations reached without convergence.")
 
     def calculate_heat_transfer_coeffs(self, m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s):
         """
