@@ -6,33 +6,38 @@ import CoolProp as CP
 
 
 class PackedBedModel:
-    """
+    r"""
     An implementation of the packed bed thermal energy storage model described by Battisti et al.[^1].
+
+    !!! Warning "Assumptions"
+
+        - Constant solid phase density
+        - Constant wall thermal properties
 
     [^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
     systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
     183, p. 116032, 2021.
     """
 
-    atol_T_f = 0.05
+    atol_T_f: float = 0.05
     """Absolute tolerance for fluid temperature [ºC]."""
-    atol_P = 0.1
+    atol_P: float = 0.1
     """Absolute tolerance for pressure [Pa]."""
-    atol_T_s = 0.05
+    atol_T_s: float = 0.05
     """Absolute tolerance for solid temperature [ºC]."""
 
-    rtol_T_wall = 0.05
+    rtol_T_wall: float = 0.05
     """Relative tolerance for wall and lid temperatures."""
-    rtol_i_f = 0.01
+    rtol_i_f: float = 0.01
     """Relative tolerance for fluid enthalpy."""
-    rtol_rho_f = 0.1
+    rtol_rho_f: float = 0.1
     """Relative tolerance for fluid density."""
-    rtol_m_dot = 0.1
+    rtol_m_dot: float = 0.1
     """Relative tolerance for mass flow rate."""
-    rtol_h = 0.1
+    rtol_h: float = 0.1
     """Relative tolerance for volumetric and wall heat transfer coefficients."""
 
-    max_iter = 100
+    max_iter: int = 100
     """Maximum number of iterations for the loop."""
 
     def __init__(
@@ -127,7 +132,6 @@ class PackedBedModel:
         T_wall_bound = [T_d, *(T_d - np.add.accumulate(Q_wall * R_wall))]
 
         # Calculate coordinates and temperature profiles for walls and lids
-
         T_wall = []
         T_lid = []
         x = []
