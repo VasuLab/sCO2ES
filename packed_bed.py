@@ -180,16 +180,41 @@ class PackedBedModel:
         self.rho_wall = np.repeat(rho_wall, n_wall)
         self.cp_wall = np.repeat(cp_wall, n_wall)
 
-    def advance(self):
+        # Set up solution matrices
+        self.A = np.zeros((self.nodes, self.nodes), dtype=float)
+        self.b = np.zeros((self.nodes,), dtype=float)
+
+    def _top_lid(self, i):
+        """Index transformation for the top lid node temperatures."""
+        return i
+
+    def _fluid(self, i):
+        """Index transformation for the fluid node temperatures."""
+        return self.m + i
+
+    def _solid(self, i):
+        """Index transformation for the solid node temperatures."""
+        return self.m + self.n + i
+
+    def _bottom_lid(self, i):
+        """Index transformation for the bottom lid node temperatures."""
+        return self.m + 2 * self.n + i
+
+    def _wall(self, i, j):
+        """Index transformation for the wall node temperatures."""
+        return 2 * (self.m + self.n) + j * self.n + i
+
+    def advance(self, t):
         """
         The main solver loop.
         """
+
         while not self.stop():
+            self.step()
+
             Bi = self.biot_number(self.h_v, self.d, self.eps, self.k_s)
             if not np.all(Bi <= 0.1):
                 raise Exception("Biot number exceeded acceptable threshold.")
-
-            self.step()
 
     def stop(self) -> bool:
         """A function that indicates when the solver should stop."""
