@@ -13,6 +13,19 @@ class PackedBedModel:
 
         - Constant solid phase density
         - Constant wall thermal properties
+        - Constant axial spacing
+
+    Attributes:
+        n: Number of nodes in the axial direction.
+        m: Number of wall or lid nodes in the radial or axial directions, respectively.
+        nodes: Total number of nodes (`2(n+m) + nm`).
+        r_wall (m): Radial positions of wall nodes from centerline [m].
+        r_bound (m + 1): Radial positions of wall cell boundaries from centerline [m].
+        z_top_lid (m): Axial positions of top lid nodes from charging inlet in direction of flow [m].
+        z_bottom_lid (m): Axial positions of bottom lid nodes from charging inlet in direction of flow [m].
+        V_wall (m): Volume of the wall cells [m^3^].
+        A_wall_z (m): Surface area of the wall cell boundary in the axial direction [m^2^].
+        A_wall_r (m+1): Surface area of the wall cell boundary in the radial direction [m^2^].
 
     [^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
     systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
@@ -115,6 +128,22 @@ class PackedBedModel:
         if isinstance(n_wall, int):
             n_wall = np.full(t_wall.shape, n_wall)
 
+        self.m = sum(n_wall)
+        self.nodes = 2 * (n + self.m) + n * self.m
+
+        # Determine wall grid properties
+        dx_bound = np.add.accumulate(np.insert(np.repeat(t_wall / n_wall, n_wall), 0, 0), dtype=float)
+        dx_center = (dx_bound[1:] + dx_bound[:-1]) / 2
+
+        self.r_bound = self.D / 2 + dx_bound
+        self.r_wall = self.D / 2 + dx_center
+        self.z_top_lid = -dx_center[::-1]
+        self.z_bottom_lid = L + dx_center
+
+        self.A_wall_z = np.pi * (self.r_bound[1:]**2 - self.r_bound[:-1]**2)
+        self.V_wall = self.A_wall_z * self.dz
+        self.A_wall_r = 2 * np.pi * self.dz * self.r_bound
+
         # Initialize wall/lid temperature distribution
         self.T_wall = np.empty((1, n, np.sum(n_wall)), dtype=float)
         self.T_top_lid = np.empty((1, np.sum(n_wall)), dtype=float)
@@ -125,28 +154,20 @@ class PackedBedModel:
         Q_lid = (T_d - T_env) / np.sum(R_lid)  # Heat flux through the lid
         T_lid_bound = np.array([T_d, *(T_d - np.add.accumulate(Q_lid * R_lid))])
 
-        x_bound = np.array([0, *np.add.accumulate(t_wall)])
-        r_bound = D/2 + x_bound
-        R_wall = np.log(r_bound[1:] / r_bound[:-1]) / (2 * np.pi * k_wall * L)
+        self.r_layer_bound = D/2 + np.array([0, *np.add.accumulate(t_wall)])
+        R_wall = np.log(self.r_layer_bound[1:] / self.r_layer_bound[:-1]) / (2 * np.pi * k_wall * L)
         Q_wall = (T_d - T_env) / np.sum(R_wall)
         T_wall_bound = [T_d, *(T_d - np.add.accumulate(Q_wall * R_wall))]
 
         # Calculate coordinates and temperature profiles for walls and lids
         T_wall = []
         T_lid = []
-        x = []
 
         for i in range(n_wall.size):
             dx = t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i]))
             T_wall.append(T_wall_bound[i] -
-                          Q_wall * np.log(1 + dx / r_bound[i]) / (2 * np.pi * L * k_wall[i]))
+                          Q_wall * np.log(1 + dx / self.r_layer_bound[i]) / (2 * np.pi * L * k_wall[i]))
             T_lid.append(T_lid_bound[i] + np.diff(T_lid_bound)[i] * dx / t_wall[i])
-            x.append(x_bound[i] + dx)
-
-        x = np.array(x).flatten()
-        self.r_wall = self.D / 2 + x
-        self.z_top_lid = -x[::-1]
-        self.z_bottom_lid = L + x
 
         T_lid = np.array(T_lid).flatten()
         T_wall = np.array(T_wall).flatten()
@@ -177,6 +198,9 @@ class PackedBedModel:
     @jit(nopython=True, parallel=True)
     def step(self, dt):
         """
+
+        :material-lightning-bolt:{ .parallel } Parallelized
+
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
         """
 
