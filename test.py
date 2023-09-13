@@ -1,11 +1,12 @@
 from packed_bed import PackedBedModel
 from matplotlib import pyplot as plt
 
+D = 3.5
 t_i = 0.20  # Insulation thickness [m]
 t_g = 0.20  # Ground thickness [m]
 
 P = 30e6  # Maximum working pressure
-t_steel = P * (3.5 + 2 * t_i) / (2 * (140e6 - 0.6 * P))  # Steel thickness [m]
+t_steel = P * (D + 2 * t_i) / (2 * (140e6 - 0.6 * P))  # Steel thickness [m]
 
 pbed = PackedBedModel(
     T_d=500 + 273,
