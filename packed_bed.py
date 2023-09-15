@@ -144,6 +144,10 @@ class PackedBedModel:
         self.V_wall = self.A_wall_z * self.dz
         self.A_wall_r = 2 * np.pi * self.dz * self.r_bound
 
+        self.A_lid = np.pi * self.D ** 2 / 4
+        self.V_bottom_lid = self.A_lid * np.diff(dx_bound)
+        self.V_top_lid = self.V_bottom_lid[::-1]
+
         # Initialize wall/lid temperature distribution
         self.T_wall = np.empty((1, n, np.sum(n_wall)), dtype=float)
         self.T_top_lid = np.empty((1, np.sum(n_wall)), dtype=float)
@@ -180,25 +184,19 @@ class PackedBedModel:
         self.rho_wall = np.repeat(rho_wall, n_wall)
         self.cp_wall = np.repeat(cp_wall, n_wall)
 
-        # Set up solution matrices
-        self.A = np.zeros((self.nodes, self.nodes), dtype=float)
-        self.b = np.zeros((self.nodes,), dtype=float)
+        self.k_bottom_lid = self.k_wall
+        self.rho_bottom_lid = self.rho_wall
+        self.cp_bottom_lid = self.cp_wall
 
-    def _top_lid(self, i):
-        """Index transformation for the top lid node temperatures."""
-        return i
+        self.k_bottom_lid_bound = 2 * self.k_bottom_lid[:-1] * self.k_bottom_lid[1:] \
+                                  / (self.k_bottom_lid[:-1] + self.k_bottom_lid[1:])
 
-    def _fluid(self, i):
-        """Index transformation for the fluid node temperatures."""
-        return self.m + i
+        self.k_top_lid = self.k_wall[::-1]
+        self.rho_top_lid = self.rho_wall[::-1]
+        self.cp_top_lid = self.cp_wall[::-1]
 
-    def _solid(self, i):
-        """Index transformation for the solid node temperatures."""
-        return self.m + self.n + i
-
-    def _bottom_lid(self, i):
-        """Index transformation for the bottom lid node temperatures."""
-        return self.m + 2 * self.n + i
+        self.k_top_lid_bound = 2 * self.k_top_lid[:-1] * self.k_top_lid[1:] \
+                               / (self.k_top_lid[:-1] + self.k_top_lid[1:])
 
     def _wall(self, i, j):
         """Index transformation for the wall node temperatures."""
@@ -220,7 +218,6 @@ class PackedBedModel:
         """A function that indicates when the solver should stop."""
         ...
 
-    @jit(nopython=True, parallel=True)
     def step(self, dt):
         """
 
@@ -258,27 +255,90 @@ class PackedBedModel:
         h_wall = np.copy(self.h_wall)
 
         for b in range(self.max_iter):
+            # Update thermodynamic properties
             k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(T_f, P)
             E_s, k_s = self.calculate_solid_props(T_s)
             h_v, k_eff, h_wall = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
 
-            # Calculate next state
-            ...
+            # Setup lid/wall linear systems
+            a_top_lid = np.zeros((self.m, self.m))
+            a_bottom_lid = np.zeros((self.m, self.m))
+            a_wall = np.zeros((self.m * self.n, self.m * self.n))
+
+            b_top_lid = np.zeros(self.m)
+            b_bottom_lid = np.zeros(self.m)
+            b_wall = np.zeros(self.m * self.n)
+
+            """Top lid"""
+
+            # Conduction BC
+            a_top_lid[0, 0] = (
+                    self.V_top_lid[0] * self.rho_top_lid[0] * self.cp_top_lid[0] / dt
+                    + self.k_top_lid_bound[0] * self.A_lid / (self.z_top_lid[1] - self.z_top_lid[0])
+                    + 2 * self.k_top_lid[0] * self.A_lid ** 2 / self.V_top_lid[0]
+            )
+            a_top_lid[0, 1] = -self.k_top_lid_bound[0] * self.A_lid / (self.z_top_lid[1] - self.z_top_lid[0])
+            b_top_lid[0] = (
+                    self.V_top_lid[0] * self.rho_top_lid[0] * self.cp_top_lid[0] / dt * T_top_lid_prev[0]
+                    + 2 * self.k_top_lid[0] * self.A_lid ** 2 / self.V_top_lid[0] * self.T_env
+            )
+
+            # Internal nodes
+            for i in range(1, self.m - 1):
+                a_top_lid[i, i] = (
+                        self.V_top_lid[i] * self.rho_top_lid[i] * self.cp_top_lid[i] / dt
+                        + self.k_top_lid_bound[i-1] * self.A_lid / (self.z_top_lid[i] - self.z_top_lid[i-1])
+                        + self.k_top_lid_bound[i] * self.A_lid / (self.z_top_lid[i+1] - self.z_top_lid[i])
+                )
+                a_top_lid[i, i-1] = -self.k_top_lid_bound[i-1] * self.A_lid / (self.z_top_lid[i] - self.z_top_lid[i-1])
+                a_top_lid[i, i+1] = -self.k_top_lid_bound[i] * self.A_lid / (self.z_top_lid[i+1] - self.z_top_lid[i])
+
+                b_top_lid[i] = self.V_top_lid[i] * self.rho_top_lid[i] * self.cp_top_lid[i] / dt * T_top_lid_prev[i]
+
+            # Convection BC
+            a_top_lid[-1, -1] = (
+                    self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt
+                    + self.k_top_lid_bound[-1] * self.A_lid / (self.z[-1] - self.z[-2])
+                    + h_wall[0] * self.A_lid
+            )
+            a_top_lid[-1, -2] = -self.k_top_lid_bound[-1] * self.A_lid / (self.z[-1] - self.z[-2])
+            b_top_lid[-1] = (
+                    self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt * T_top_lid_prev[-1]
+                    + h_wall[0] * self.A_lid * T_f[0]
+            )
+
+            """Bottom lid"""
+
+            # Conduction BC
+
+            # Internal nodes
+
+            # Convection BC
+
+            """Wall"""
+            for i in range(self.n):
+                for j in range(self.m):
+                    ...
+
+            # Solve for lid/wall temperatures
+            T_top_lid = np.linalg.solve(a_top_lid, b_top_lid)
+            # T_bottom_lid = np.linalg.solve(a_bottom_lid, b_bottom_lid)
+            # T_wall = np.linalg.solve(a_wall, b_wall)
 
             # Check convergence
             converged = np.all([
-                np.abs(P - P_prev) <= self.atol_P,
-                np.abs(T_f - T_f_prev) <= self.atol_T_f,
-                np.abs(T_s - T_s_prev) <= self.atol_T_s,
-                np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall,
-                np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid,
-                np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid,
-                np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f,
-                np.abs(rho_f - rho_f_prev) <= self.rtol_rho_f * rho_f,
-                np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot,
-                np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot,
-                np.abs(h_v - h_v_prev) <= self.rtol_h * h_v,
-                np.abs(h_wall - h_wall_prev) <= self.rtol_h * h_wall,
+                np.all(np.abs(P - P_prev) <= self.atol_P),
+                np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
+                np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
+                np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
+                np.all(np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid),
+                np.all(np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid),
+                # np.all(np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f),
+                # np.all(np.abs(rho_f - rho_f_prev) <= self.rtol_rho_f * rho_f),
+                # np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
+                # np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
+                # np.all(np.abs(h_v - h_v_prev) <= self.rtol_h * h_v),
+                # np.all(np.abs(h_wall - h_wall_prev) <= self.rtol_h * h_wall),
             ])
 
             if converged:
