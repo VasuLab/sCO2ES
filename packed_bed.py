@@ -39,15 +39,15 @@ class PackedBedModel:
     atol_T_s: float = 0.05
     """Absolute tolerance for solid temperature [ºC]."""
 
-    rtol_T_wall: float = 0.05
+    rtol_T_wall: float = 0.05e-2
     """Relative tolerance for wall and lid temperatures."""
-    rtol_i_f: float = 0.01
+    rtol_i_f: float = 0.01e-2
     """Relative tolerance for fluid enthalpy."""
-    rtol_rho_f: float = 0.1
+    rtol_rho_f: float = 0.1e-2
     """Relative tolerance for fluid density."""
-    rtol_m_dot: float = 0.1
+    rtol_m_dot: float = 0.1e-2
     """Relative tolerance for mass flow rate."""
-    rtol_h: float = 0.1
+    rtol_h: float = 0.1e-2
     """Relative tolerance for volumetric and wall heat transfer coefficients."""
 
     max_iter: int = 100
