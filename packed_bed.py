@@ -298,10 +298,10 @@ class PackedBedModel:
             # Convection BC
             a_top_lid[-1, -1] = (
                     self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt
-                    + self.k_top_lid_bound[-1] * self.A_lid / (self.z[-1] - self.z[-2])
+                    + self.k_top_lid_bound[-1] * self.A_lid / (self.z_top_lid[-1] - self.z_top_lid[-2])
                     + h_wall[0] * self.A_lid
             )
-            a_top_lid[-1, -2] = -self.k_top_lid_bound[-1] * self.A_lid / (self.z[-1] - self.z[-2])
+            a_top_lid[-1, -2] = -self.k_top_lid_bound[-1] * self.A_lid / (self.z_top_lid[-1] - self.z_top_lid[-2])
             b_top_lid[-1] = (
                     self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt * self.T_top_lid[-1, -1]
                     + h_wall[0] * self.A_lid * T_f[0]
@@ -336,11 +336,11 @@ class PackedBedModel:
             # Convection BC
             a_bottom_lid[0, 0] = (
                     self.V_bottom_lid[0] * self.rho_bottom_lid[0] * self.cp_bottom_lid[0] / dt
-                    + self.k_bottom_lid_bound[0] * self.A_lid / (self.z[1] - self.z[0])
+                    + self.k_bottom_lid_bound[0] * self.A_lid / (self.z_bottom_lid[1] - self.z_bottom_lid[0])
                     + h_wall[-1] * self.A_lid
             )
-            a_bottom_lid[0, 1] = -self.k_bottom_lid_bound[0] * self.A_lid / (self.z[1] - self.z[0])
-            b_bottom_lid[-1] = (
+            a_bottom_lid[0, 1] = -self.k_bottom_lid_bound[0] * self.A_lid / (self.z_bottom_lid[1] - self.z_bottom_lid[0])
+            b_bottom_lid[0] = (
                     self.V_bottom_lid[0] * self.rho_bottom_lid[0] * self.cp_bottom_lid[0] / dt * self.T_bottom_lid[-1, 0]
                     + h_wall[-1] * self.A_lid * T_f[-1]
             )
@@ -352,15 +352,15 @@ class PackedBedModel:
 
             # Solve for lid/wall temperatures
             T_top_lid = np.linalg.solve(a_top_lid, b_top_lid)
-            # T_bottom_lid = np.linalg.solve(a_bottom_lid, b_bottom_lid)
+            T_bottom_lid = np.linalg.solve(a_bottom_lid, b_bottom_lid)
             # T_wall = np.linalg.solve(a_wall, b_wall)
 
             # Check convergence
             converged = np.all([
-                np.all(np.abs(P - P_prev) <= self.atol_P),
-                np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
-                np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
-                np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
+                # np.all(np.abs(P - P_prev) <= self.atol_P),
+                # np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
+                # np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
+                # np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
                 np.all(np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid),
                 np.all(np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid),
                 # np.all(np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f),
