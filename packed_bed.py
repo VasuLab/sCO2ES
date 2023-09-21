@@ -279,7 +279,7 @@ class PackedBedModel:
             )
             a_top_lid[0, 1] = -self.k_top_lid_bound[0] * self.A_lid / (self.z_top_lid[1] - self.z_top_lid[0])
             b_top_lid[0] = (
-                    self.V_top_lid[0] * self.rho_top_lid[0] * self.cp_top_lid[0] / dt * T_top_lid_prev[0]
+                    self.V_top_lid[0] * self.rho_top_lid[0] * self.cp_top_lid[0] / dt * self.T_top_lid[-1, 0]
                     + 2 * self.k_top_lid[0] * self.A_lid ** 2 / self.V_top_lid[0] * self.T_env
             )
 
@@ -293,7 +293,7 @@ class PackedBedModel:
                 a_top_lid[i, i-1] = -self.k_top_lid_bound[i-1] * self.A_lid / (self.z_top_lid[i] - self.z_top_lid[i-1])
                 a_top_lid[i, i+1] = -self.k_top_lid_bound[i] * self.A_lid / (self.z_top_lid[i+1] - self.z_top_lid[i])
 
-                b_top_lid[i] = self.V_top_lid[i] * self.rho_top_lid[i] * self.cp_top_lid[i] / dt * T_top_lid_prev[i]
+                b_top_lid[i] = self.V_top_lid[i] * self.rho_top_lid[i] * self.cp_top_lid[i] / dt * self.T_top_lid[-1, i]
 
             # Convection BC
             a_top_lid[-1, -1] = (
@@ -303,7 +303,7 @@ class PackedBedModel:
             )
             a_top_lid[-1, -2] = -self.k_top_lid_bound[-1] * self.A_lid / (self.z[-1] - self.z[-2])
             b_top_lid[-1] = (
-                    self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt * T_top_lid_prev[-1]
+                    self.V_top_lid[-1] * self.rho_top_lid[-1] * self.cp_top_lid[-1] / dt * self.T_top_lid[-1, -1]
                     + h_wall[0] * self.A_lid * T_f[0]
             )
 
@@ -317,7 +317,7 @@ class PackedBedModel:
             )
             a_bottom_lid[-1, -2] = -self.k_bottom_lid_bound[-1] * self.A_lid / (self.z_bottom_lid[-1] - self.z_bottom_lid[-2])
             b_bottom_lid[-1] = (
-                    self.V_bottom_lid[-1] * self.rho_bottom_lid[-1] * self.cp_bottom_lid[-1] / dt * T_bottom_lid_prev[-1]
+                    self.V_bottom_lid[-1] * self.rho_bottom_lid[-1] * self.cp_bottom_lid[-1] / dt * self.T_bottom_lid[-1, -1]
                     + 2 * self.k_bottom_lid[-1] * self.A_lid ** 2 / self.V_bottom_lid[-1] * self.T_env
             )
             
@@ -331,7 +331,7 @@ class PackedBedModel:
                 a_bottom_lid[i, i-1] = -self.k_bottom_lid_bound[i-1] * self.A_lid / (self.z_bottom_lid[i] - self.z_bottom_lid[i-1])
                 a_bottom_lid[i, i+1] = -self.k_bottom_lid_bound[i] * self.A_lid / (self.z_bottom_lid[i+1] - self.z_bottom_lid[i])
 
-                b_bottom_lid[i] = self.V_bottom_lid[i] * self.rho_bottom_lid[i] * self.cp_bottom_lid[i] / dt * T_bottom_lid_prev[i]
+                b_bottom_lid[i] = self.V_bottom_lid[i] * self.rho_bottom_lid[i] * self.cp_bottom_lid[i] / dt * self.T_bottom_lid[-1, i]
 
             # Convection BC
             a_bottom_lid[0, 0] = (
@@ -341,7 +341,7 @@ class PackedBedModel:
             )
             a_bottom_lid[0, 1] = -self.k_bottom_lid_bound[0] * self.A_lid / (self.z[1] - self.z[0])
             b_bottom_lid[-1] = (
-                    self.V_bottom_lid[0] * self.rho_bottom_lid[0] * self.cp_bottom_lid[0] / dt * T_bottom_lid_prev[0]
+                    self.V_bottom_lid[0] * self.rho_bottom_lid[0] * self.cp_bottom_lid[0] / dt * self.T_bottom_lid[-1, 0]
                     + h_wall[-1] * self.A_lid * T_f[-1]
             )
 
