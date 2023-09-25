@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.typing as npt
-from numba import jit, prange
+from numba import njit, prange
 from matplotlib import pyplot as plt
 import CoolProp as CP
 
@@ -185,11 +185,6 @@ class PackedBedModel:
         self.rho_wall = np.repeat(rho_wall, n_wall)
         self.cp_wall = np.repeat(cp_wall, n_wall)
 
-        self.k_wall_bound = (self.dr[:-1] + self.dr[1:]) / (
-            self.dr[:-1] / self.k_wall[:-1]
-            + self.dr[1:] / self.k_wall[1:]
-        )
-
         self.k_bottom_lid = self.k_wall
         self.rho_bottom_lid = self.rho_wall
         self.cp_bottom_lid = self.cp_wall
@@ -265,11 +260,9 @@ class PackedBedModel:
             # Setup lid/wall linear systems
             a_top_lid = np.zeros((self.m, self.m))
             a_bottom_lid = np.zeros((self.m, self.m))
-            a_wall = np.zeros((self.m * self.n, self.m * self.n))
 
             b_top_lid = np.zeros(self.m)
             b_bottom_lid = np.zeros(self.m)
-            b_wall = np.zeros(self.m * self.n)
 
             """Top lid"""
 
@@ -347,84 +340,18 @@ class PackedBedModel:
                     + h_wall[-1] * self.A_lid * T_f[-1]
             )
 
-            """Wall"""
-
-            # Convection BC
-            for i in range(self.n):
-                a_wall[i, i] = (
-                    self.V_wall[0] * self.rho_wall[0] * self.cp_wall[0] / dt
-                    + self.k_wall_bound[0] * self.A_wall_r[1] / (self.r_wall[1] - self.r_wall[0])  # +r
-                    + h_wall[i] * self.A_wall_r[0]  # convective heat transfer (-r)
-                )
-                a_wall[i, i+self.n] = -self.k_wall_bound[0] * self.A_wall_r[1] / (self.r_wall[1] - self.r_wall[0])  # +r
-
-                if i != 0:  # -z
-                    a_wall[i, i] += self.k_wall[0] * self.A_wall_z[0] / self.dz
-                    a_wall[i, i-1] = -self.k_wall[0] * self.A_wall_z[0] / self.dz
-
-                if i != self.n - 1:  # +z
-                    a_wall[i, i] += self.k_wall[0] * self.A_wall_z[0] / self.dz
-                    a_wall[i, i+1] = -self.k_wall[0] * self.A_wall_z[0] / self.dz
-
-                b_wall[i] = (
-                    self.V_wall[0] * self.rho_wall[0] * self.cp_wall[0] / dt * self.T_wall[-1, i, 0]  # previous time step
-                    + h_wall[i] * self.A_wall_r[0] * T_f[i]  # convective heat transfer (-r)
-                )
-
-            # Internal nodes
-            for i in range(self.n):
-                for j in range(1, self.m - 1):
-                    x = j * self.n + i
-
-                    a_wall[x, x] = (
-                        self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt
-                        + self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
-                        + self.k_wall_bound[j] * self.A_wall_r[j+1] / (self.r_wall[j+1] - self.r_wall[j])  # +r
-                    )
-
-                    a_wall[x, x - self.n] = -self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
-                    a_wall[x, x + self.n] = -self.k_wall_bound[j] * self.A_wall_r[j+1] / (self.r_wall[j+1] - self.r_wall[j])  # +r
-
-                    if i != 0:  # -z
-                        a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
-                        a_wall[x, x-1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
-
-                    if i != self.n - 1:  # +z
-                        a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
-                        a_wall[x, x+1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
-
-                    b_wall[x] = self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt * self.T_wall[-1, i, j]  # previous time step
-
-            # Conduction BC
-            for i in range(self.n):
-                j = self.m - 1
-                x = j * self.n + i
-
-                a_wall[x, x] = (
-                    self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt
-                    + self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
-                    + 2 * self.k_wall[j] * self.A_wall_r[j+1] / self.dr[j]  # conduction to environment (+r)
-                )
-
-                a_wall[x, x-self.n] = -self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
-
-                if i != 0:  # -z
-                    a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
-                    a_wall[x, x-1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
-
-                if i != self.n - 1:  # +z
-                    a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
-                    a_wall[x, x+1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
-
-                b_wall[x] = (
-                    self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt * self.T_wall[-1, i, j]  # previous time step
-                    + 2 * self.k_wall[j] * self.A_wall_r[j+1] / self.dr[j] * self.T_env  # conduction to environment (+r)
-                )
-
             # Solve for lid/wall temperatures
             T_top_lid = np.linalg.solve(a_top_lid, b_top_lid)
             T_bottom_lid = np.linalg.solve(a_bottom_lid, b_bottom_lid)
-            T_wall = np.reshape(np.linalg.solve(a_wall, b_wall), (self.n, self.m), "F")
+
+            T_wall = self._solve_wall_temperature(
+                self.T_wall[-1], T_f, self.T_env,
+                h_wall,
+                self.k_wall, self.rho_wall, self.cp_wall,
+                self.r_wall, self.dr, self.dz,
+                self.V_wall, self.A_wall_r, self.A_wall_z,
+                dt
+            )
 
             # Check convergence
             converged = np.all([
@@ -458,6 +385,52 @@ class PackedBedModel:
                 return
 
         raise Exception("Maximum number of iterations reached without convergence.")
+
+    @staticmethod
+    @njit(parallel=True)
+    def _solve_wall_temperature(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
+        # Matrix setup
+        n, m = T_wall.shape
+        a = np.zeros((m * n, m * n))
+        b = np.zeros(m * n)
+
+        # Calculate thermal conductivity at interfaces using harmonic mean
+        k_intf = (dr[:-1] + dr[1:]) / (dr[:-1] / k[:-1] + dr[1:] / k[1:])
+
+        # Fill matrix
+        for i in prange(n):
+            for j in prange(m):
+                x = j * n + i  # Coordinate conversion
+
+                a[x, x] = V[j] * rho[j] * cp[j] / dt  # next time step
+                b[x] = V[j] * rho[j] * cp[j] / dt * T_wall[i, j]  # previous time step
+
+                # Radial boundary conditions
+                if j == 0:  # Interior wall node with heat transfer to fluid
+                    a[x, x] += h_wall[i] * A_r[0]
+                    b[x] += h_wall[i] * A_r[0] * T_f[i]
+                else:
+                    a[x, x] += k_intf[j-1] * A_r[j] / (r[j] - r[j - 1])
+                    a[x, x-n] = -k_intf[j-1] * A_r[j] / (r[j] - r[j - 1])
+
+                if j == m-1:  # Exterior wall node with heat transfer to environment
+                    a[x, x] += 2 * k[j] * A_r[j + 1] / dr[j]
+                    b[x] += 2 * k[j] * A_r[j + 1] / dr[j] * T_env
+                else:
+                    a[x, x] += k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
+                    a[x, x+n] = -k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
+
+                # Axial boundary conditions
+                if i != 0:
+                    a[x, x] += k[j] * A_z[j] / dz
+                    a[x, x-1] = -k[j] * A_z[j] / dz
+
+                if i != n-1:
+                    a[x, x] += k[j] * A_z[j] / dz
+                    a[x, x+1] = -k[j] * A_z[j] / dz
+
+        # Solve
+        return np.linalg.solve(a, b).reshape((m, n)).T
 
     def calculate_heat_transfer_coeffs(self, m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s):
         """
@@ -517,7 +490,7 @@ class PackedBedModel:
         return k_f, rho_f, mu_f, cp_f
 
     @staticmethod
-    @jit(nopython=True, parallel=True)
+    @njit(parallel=True)
     def calculate_solid_props(T_s):
         """
         Returns the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
