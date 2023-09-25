@@ -130,9 +130,10 @@ class PackedBedModel:
 
         self.m = sum(n_wall)
         self.nodes = 2 * (n + self.m) + n * self.m
+        self.dr = np.repeat(t_wall / n_wall, n_wall)
 
         # Determine wall grid properties
-        dx_bound = np.add.accumulate(np.insert(np.repeat(t_wall / n_wall, n_wall), 0, 0), dtype=float)
+        dx_bound = np.add.accumulate(np.insert(self.dr, 0, 0))
         dx_center = (dx_bound[1:] + dx_bound[:-1]) / 2
 
         self.r_bound = self.D / 2 + dx_bound
@@ -149,9 +150,9 @@ class PackedBedModel:
         self.V_top_lid = self.V_bottom_lid[::-1]
 
         # Initialize wall/lid temperature distribution
-        self.T_wall = np.empty((1, n, np.sum(n_wall)), dtype=float)
-        self.T_top_lid = np.empty((1, np.sum(n_wall)), dtype=float)
-        self.T_bottom_lid = np.empty((1, np.sum(n_wall)), dtype=float)
+        self.T_wall = np.empty((1, self.n, self.m), dtype=float)
+        self.T_top_lid = np.empty((1, self.m), dtype=float)
+        self.T_bottom_lid = np.empty((1, self.m), dtype=float)
 
         # Calculate heat flux through lid and walls
         R_lid = t_wall / k_wall  # Convection/conduction resistance
@@ -184,6 +185,11 @@ class PackedBedModel:
         self.rho_wall = np.repeat(rho_wall, n_wall)
         self.cp_wall = np.repeat(cp_wall, n_wall)
 
+        self.k_wall_bound = (self.dr[:-1] + self.dr[1:]) / (
+            self.dr[:-1] / self.k_wall[:-1]
+            + self.dr[1:] / self.k_wall[1:]
+        )
+
         self.k_bottom_lid = self.k_wall
         self.rho_bottom_lid = self.rho_wall
         self.cp_bottom_lid = self.cp_wall
@@ -197,10 +203,6 @@ class PackedBedModel:
 
         self.k_top_lid_bound = 2 * self.k_top_lid[:-1] * self.k_top_lid[1:] \
                                / (self.k_top_lid[:-1] + self.k_top_lid[1:])
-
-    def _wall(self, i, j):
-        """Index transformation for the wall node temperatures."""
-        return 2 * (self.m + self.n) + j * self.n + i
 
     def advance(self, t):
         """
@@ -346,21 +348,90 @@ class PackedBedModel:
             )
 
             """Wall"""
+
+            # Convection BC
             for i in range(self.n):
-                for j in range(self.m):
-                    ...
+                a_wall[i, i] = (
+                    self.V_wall[0] * self.rho_wall[0] * self.cp_wall[0] / dt
+                    + self.k_wall_bound[0] * self.A_wall_r[1] / (self.r_wall[1] - self.r_wall[0])  # +r
+                    + h_wall[i] * self.A_wall_r[0]  # convective heat transfer (-r)
+                )
+                a_wall[i, i+self.n] = -self.k_wall_bound[0] * self.A_wall_r[1] / (self.r_wall[1] - self.r_wall[0])  # +r
+
+                if i != 0:  # -z
+                    a_wall[i, i] += self.k_wall[0] * self.A_wall_z[0] / self.dz
+                    a_wall[i, i-1] = -self.k_wall[0] * self.A_wall_z[0] / self.dz
+
+                if i != self.n - 1:  # +z
+                    a_wall[i, i] += self.k_wall[0] * self.A_wall_z[0] / self.dz
+                    a_wall[i, i+1] = -self.k_wall[0] * self.A_wall_z[0] / self.dz
+
+                b_wall[i] = (
+                    self.V_wall[0] * self.rho_wall[0] * self.cp_wall[0] / dt * self.T_wall[-1, i, 0]  # previous time step
+                    + h_wall[i] * self.A_wall_r[0] * T_f[i]  # convective heat transfer (-r)
+                )
+
+            # Internal nodes
+            for i in range(self.n):
+                for j in range(1, self.m - 1):
+                    x = j * self.n + i
+
+                    a_wall[x, x] = (
+                        self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt
+                        + self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
+                        + self.k_wall_bound[j] * self.A_wall_r[j+1] / (self.r_wall[j+1] - self.r_wall[j])  # +r
+                    )
+
+                    a_wall[x, x - self.n] = -self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
+                    a_wall[x, x + self.n] = -self.k_wall_bound[j] * self.A_wall_r[j+1] / (self.r_wall[j+1] - self.r_wall[j])  # +r
+
+                    if i != 0:  # -z
+                        a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
+                        a_wall[x, x-1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
+
+                    if i != self.n - 1:  # +z
+                        a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
+                        a_wall[x, x+1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
+
+                    b_wall[x] = self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt * self.T_wall[-1, i, j]  # previous time step
+
+            # Conduction BC
+            for i in range(self.n):
+                j = self.m - 1
+                x = j * self.n + i
+
+                a_wall[x, x] = (
+                    self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt
+                    + self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
+                    + 2 * self.k_wall[j] * self.A_wall_r[j+1] / self.dr[j]  # conduction to environment (+r)
+                )
+
+                a_wall[x, x-self.n] = -self.k_wall_bound[j-1] * self.A_wall_r[j] / (self.r_wall[j] - self.r_wall[j-1])  # -r
+
+                if i != 0:  # -z
+                    a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
+                    a_wall[x, x-1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
+
+                if i != self.n - 1:  # +z
+                    a_wall[x, x] += self.k_wall[j] * self.A_wall_z[j] / self.dz
+                    a_wall[x, x+1] = -self.k_wall[j] * self.A_wall_z[j] / self.dz
+
+                b_wall[x] = (
+                    self.V_wall[j] * self.rho_wall[j] * self.cp_wall[j] / dt * self.T_wall[-1, i, j]  # previous time step
+                    + 2 * self.k_wall[j] * self.A_wall_r[j+1] / self.dr[j] * self.T_env  # conduction to environment (+r)
+                )
 
             # Solve for lid/wall temperatures
             T_top_lid = np.linalg.solve(a_top_lid, b_top_lid)
             T_bottom_lid = np.linalg.solve(a_bottom_lid, b_bottom_lid)
-            # T_wall = np.linalg.solve(a_wall, b_wall)
+            T_wall = np.reshape(np.linalg.solve(a_wall, b_wall), (self.n, self.m), "F")
 
             # Check convergence
             converged = np.all([
                 # np.all(np.abs(P - P_prev) <= self.atol_P),
                 # np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
                 # np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
-                # np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
+                np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
                 np.all(np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid),
                 np.all(np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid),
                 # np.all(np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f),
