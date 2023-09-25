@@ -230,19 +230,6 @@ class PackedBedModel:
 
         t = self.t[-1] + dt
 
-        # Previous iteration state arrays
-        P_prev = np.copy(self.P[-1])
-        T_f_prev = np.copy(self.T_f[-1])
-        T_s_prev = np.copy(self.T_s[-1])
-        T_wall_prev = np.copy(self.T_wall[-1])
-        T_top_lid_prev = np.copy(self.T_top_lid[-1])
-        T_bottom_lid_prev = np.copy(self.T_bottom_lid[-1])
-        i_f_prev = np.copy(self.i_f)
-        rho_f_prev = np.copy(self.rho_f)
-        m_dot_prev = np.copy(self.m_dot)
-        h_v_prev = np.copy(self.h_v)
-        h_wall_prev = np.copy(self.h_wall)
-
         # Next iteration state arrays
         P = np.copy(self.P[-1])
         T_f = np.copy(self.T_f[-1])
@@ -257,6 +244,19 @@ class PackedBedModel:
         h_wall = np.copy(self.h_wall)
 
         for b in range(self.max_iter):
+            # Previous iteration state arrays
+            P_prev = np.copy(P)
+            T_f_prev = np.copy(T_f)
+            T_s_prev = np.copy(T_s)
+            T_wall_prev = np.copy(T_wall)
+            T_top_lid_prev = np.copy(T_top_lid)
+            T_bottom_lid_prev = np.copy(T_bottom_lid)
+            i_f_prev = np.copy(i_f)
+            rho_f_prev = np.copy(rho_f)
+            m_dot_prev = np.copy(m_dot)
+            h_v_prev = np.copy(h_v)
+            h_wall_prev = np.copy(h_wall)
+
             # Update thermodynamic properties
             k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(T_f, P)
             E_s, k_s = self.calculate_solid_props(T_s)
