@@ -113,7 +113,7 @@ class PackedBedModel:
 
         # Field variables
         self.m_dot = np.zeros(n)  # Initially stationary
-        self.h_v, self.k_eff, self.h_wall = self.calculate_heat_transfer_coeffs(
+        self.k_eff, self.h_wall, self.h_v = self.calculate_heat_transfer_coeffs(
             self.m_dot, self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
 
         # Wall/lid parameters
@@ -211,10 +211,11 @@ class PackedBedModel:
 
     def step(self, dt):
         """
-
-        :material-lightning-bolt:{ .parallel } Parallelized
-
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
+
+        Returns:
+            Number of iterations required for convergence.
+
         """
 
         # Next iteration state arrays
@@ -247,30 +248,28 @@ class PackedBedModel:
             # Update thermodynamic properties
             k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(T_f, P)
             E_s, k_s = self.calculate_solid_props(T_s)
-            h_v, k_eff, h_wall = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
+            k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
 
             # Solve for lid/wall temperatures
-            T_top_lid = self._solve_lid_temperature(
+            T_top_lid = self.solve_lid_temperature(
                 self.T_top_lid[-1], T_f[0], self.T_env, h_wall[0],
                 self.k_top_lid, self.rho_top_lid, self.cp_top_lid,
                 self.z_top_lid, self.V_top_lid, self.A_lid, dt,
                 reverse=False
             )
 
-            T_bottom_lid = self._solve_lid_temperature(
+            T_bottom_lid = self.solve_lid_temperature(
                 self.T_bottom_lid[-1], T_f[-1], self.T_env, h_wall[-1],
                 self.k_bottom_lid, self.rho_bottom_lid, self.cp_bottom_lid,
                 self.z_bottom_lid, self.V_bottom_lid, self.A_lid, dt,
                 reverse=True
             )
 
-            T_wall = self._solve_wall_temperature(
-                self.T_wall[-1], T_f, self.T_env,
-                h_wall,
+            T_wall = self.solve_wall_temperature(
+                self.T_wall[-1], T_f, self.T_env, h_wall,
                 self.k_wall, self.rho_wall, self.cp_wall,
                 self.r_wall, self.dr, self.dz,
-                self.V_wall, self.A_wall_r, self.A_wall_z,
-                dt
+                self.V_wall, self.A_wall_r, self.A_wall_z, dt
             )
 
             # Check convergence
@@ -302,13 +301,40 @@ class PackedBedModel:
                 self.m_dot = m_dot
                 self.h_v = h_v
                 self.h_wall = h_wall
-                return
+
+                return b + 1
 
         raise Exception("Maximum number of iterations reached without convergence.")
 
     @staticmethod
     @njit(parallel=True)
-    def _solve_lid_temperature(T_lid, T_f, T_env, h_wall, k, rho, cp, z, V, A, dt, *, reverse=False):
+    def solve_lid_temperature(T_lid, T_f, T_env, h_wall, k, rho, cp, z, V, A, dt, *, reverse=False):
+        """
+        :material-lightning-bolt:{ .parallel } Parallelized
+
+        Solves for the lid temperature profile for the next time step. The boundary conditions are
+        taken as:
+
+        - Heat loss to environment by conduction at `i=0`
+        - Heat loss to fluid by convection at `i=m-1`
+        - Insulated at radial surfaces
+
+        The `reverse` keyword can be used to reverse the axial orientation of the boundary conditions.
+
+        Parameters:
+             T_lid: Lid temperature for the previous time step [K].
+             T_f: Fluid temperature estimate for the next time step at convection boundary [K].
+             T_env: Environment temperature [K].
+             h_wall: Wall heat transfer coefficient [W/m^2^⋅K].
+             k: Thermal conductivity [W/m⋅K].
+             rho: Density [kg/m^3^].
+             cp: Specific heat capacity [J/kg⋅K].
+             z: Axial positions of node centers [m].
+             V: Node volumes [m^3^].
+             A: Area of lid [m^2^].
+             dt: Time step [s].
+             reverse: Flag for reversing boundary conditions.
+        """
         # Matrix setup
         m = T_lid.size
         a = np.zeros((m, m))
@@ -351,7 +377,36 @@ class PackedBedModel:
 
     @staticmethod
     @njit(parallel=True)
-    def _solve_wall_temperature(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
+    def solve_wall_temperature(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
+        """
+        :material-lightning-bolt:{ .parallel } Parallelized
+
+        Solves for the lid temperature profile for the next time step. The boundary conditions are
+        taken as:
+
+        - Heat loss to fluid by convection at `j=0`
+        - Heat loss to environment by conduction at `j=m-1`
+        - Insulated axially at `i=0` and `i=n-1`
+
+        where the domain is discretized with `n` nodes in the axial direction and `m` in the radial
+        direction, and the wall temperature `T_wall` has the shape `(n, m)`.
+        
+        Parameters:
+             T_wall: Wall temperature for the previous time step [K].
+             T_f: Fluid temperature estimate for the next time step [K].
+             T_env: Environment temperature [K].
+             h_wall: Wall heat transfer coefficient [W/m^2^⋅K].
+             k: Thermal conductivity [W/m K].
+             rho: Density [kg/m^3^].
+             cp: Specific heat capacity [J/kg⋅K].
+             r: Radial positions of node centers [m].
+             dr: Radial node width [m].
+             dz: Axial node spacing [m].
+             V: Node volumes [m^3^].
+             A_r: Area of node interfaces in the radial direction [m^2^].
+             A_z: Area of node interfaces in the axial direction [m^2^].
+             dt: Time step [s].
+        """
         # Matrix setup
         n, m = T_wall.shape
         a = np.zeros((m * n, m * n))
@@ -409,9 +464,9 @@ class PackedBedModel:
             E_s: Emissivity of the solid.
 
         Returns:
-            h_v: Volumetric heat transfer coefficient [].
             k_eff: Effective thermal conductivity [W/m⋅K].
-            h_wall: Wall heat transfer coefficient [].
+            h_wall: Wall heat transfer coefficient [W/m^2^⋅K].
+            h_v: Volumetric heat transfer coefficient [W/m^3^⋅K].
         """
         h_v = self.volumetric_convective_heat_transfer_coeff(m_dot, k_f, cp_f, self.eps, self.d, self.D)
         h_rv = self.void_radiative_heat_transfer_coeff(T_f, self.eps, E_s)
@@ -423,7 +478,7 @@ class PackedBedModel:
             + self.cond_rad_wall_heat_transfer_coeff(k_f, k_s, h_rv, h_rs, self.eps, self.d, phi)
         )
 
-        return h_v, k_eff, h_wall
+        return k_eff, h_wall, h_v
 
     @staticmethod
     def calculate_fluid_props(T_f, P):
