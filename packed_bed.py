@@ -872,6 +872,7 @@ class PackedBedModel:
         return k_stag_eff * k_stag_wall / (k_stag_eff - k_stag_wall / 2)
 
     @staticmethod
+    @np.vectorize
     def pressure_drop(dz, rho_f, mu_f, G, eps, d, *, psi=0.9, xi1: float = 180, xi2: float = 1.8):
         r"""
         Calculates the pressure drop using the modified Ergun's equation[^1]
@@ -897,9 +898,9 @@ class PackedBedModel:
 
         """
         return dz * G**2 / (rho_f * d) * (
-                xi1 * (1 - eps)**2 * mu_f / (eps**3 * psi**2 * G * d)  # Viscous loss
-                + xi2 * (1 - eps) / (eps**3 * psi)  # Inertial loss
-        )
+            xi1 * (1 - eps)**2 * mu_f / (eps**3 * psi**2 * G * d)  # Viscous loss
+            + xi2 * (1 - eps) / (eps**3 * psi)  # Inertial loss
+        ) if G != 0 else 0
 
     def plot_temperature_contour(self, ax=None):
         """
