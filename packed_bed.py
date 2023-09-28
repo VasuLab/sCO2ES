@@ -101,7 +101,7 @@ class PackedBedModel:
         self.eps = eps
 
         # Fluid properties
-        self.P = np.full((1, n), P)
+        self.P_intf = np.full((1, n + 1), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
         self.i_f = self.calculate_fluid_enthalpy(self.T_f, self.P)
         _, self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.i_f, self.P)
@@ -193,6 +193,13 @@ class PackedBedModel:
         self.rho_top_lid = self.rho_wall[::-1]
         self.cp_top_lid = self.cp_wall[::-1]
 
+    @staticmethod
+    def interp_pressure(P_intf):
+        """
+        Returns the interpolated pressure at fluid node centers from pressure at the interfaces.
+        """
+        return (P_intf[:-1] + P_intf[1:]) / 2
+
     def advance(self, t):
         """
         The main solver loop.
@@ -219,7 +226,7 @@ class PackedBedModel:
         """
 
         # Next iteration state arrays
-        P = np.copy(self.P[-1])
+        P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
         T_f = np.copy(self.T_f[-1])
         T_s = np.copy(self.T_s[-1])
         T_wall = np.copy(self.T_wall[-1])
@@ -233,7 +240,7 @@ class PackedBedModel:
 
         for b in range(self.max_iter):
             # Previous iteration state arrays
-            P_prev = np.copy(P)
+            P_intf_prev = np.copy(P_intf)
             T_f_prev = np.copy(T_f)
             T_s_prev = np.copy(T_s)
             T_wall_prev = np.copy(T_wall)
@@ -246,7 +253,7 @@ class PackedBedModel:
             h_wall_prev = np.copy(h_wall)
 
             # Update thermodynamic properties
-            k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(T_f, P)
+            T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self.interp_pressure(P_intf))
             E_s, k_s = self.calculate_solid_props(T_s)
             k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
 
@@ -274,9 +281,9 @@ class PackedBedModel:
 
             # Check convergence
             converged = np.all([
-                # np.all(np.abs(P - P_prev) <= self.atol_P),
                 # np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
                 # np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
+                np.all(np.abs(P_intf - P_intf_prev) <= self.atol_P),
                 np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
                 np.all(np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid),
                 np.all(np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid),
@@ -290,7 +297,7 @@ class PackedBedModel:
 
             if converged:
                 self.t = np.append(self.t, self.t[-1] + dt)
-                self.P = np.append(self.P, [P], axis=0)
+                self.P_intf = np.append(self.P_intf, [P_intf], axis=0)
                 self.T_f = np.append(self.T_f, [T_f], axis=0)
                 self.T_s = np.append(self.T_s, [T_s], axis=0)
                 self.T_wall = np.append(self.T_wall, [T_wall], axis=0)
