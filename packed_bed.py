@@ -100,14 +100,14 @@ class PackedBedModel:
         self.d = d
         self.eps = eps
 
-        # State variables
+        # Fluid properties
         self.P = np.full((1, n), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
-        self.T_s = np.full((1, n), T_d, dtype=float)
+        self.i_f = self.calculate_fluid_enthalpy(self.T_f, self.P)
+        _, self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.i_f, self.P)
 
-        # Property variables
-        self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
-        self.i_f = ...
+        # Solid properties
+        self.T_s = np.full((1, n), T_d, dtype=float)
         self.rho_s = rho_s
         self.E_s, self.k_s = self.calculate_solid_props(self.T_s[0])
 
@@ -481,31 +481,49 @@ class PackedBedModel:
         return k_eff, h_wall, h_v
 
     @staticmethod
-    def calculate_fluid_props(T_f, P):
+    def calculate_fluid_enthalpy(T_f, P):
+        """
+        Returns the mass-specific enthalpy of CO~2~ at the given conditions using
+        [`CoolProp`](http://www.coolprop.org/).
+
+        Parameters:
+            T_f: Temperature [K].
+            P: Pressure [Pa].
+        """
+        i_f = np.empty_like(T_f)
+        for i in range(T_f.size):
+            i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
+        return i_f
+
+    @staticmethod
+    def calculate_fluid_props(i_f, P):
         """
         Returns the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
         using [`CoolProp`](http://www.coolprop.org/).
 
         Parameters:
-            T_f: Temperature of the fluid [K].
+            i_f: Mass-specific enthalpy of the fluid [J/kg].
             P: Pressure [Pa].
 
         Returns:
+            T_f: Temperature of the fluid [K].
             k_f: Thermal conductivity of the fluid [W/m⋅K].
             rho_f: Density of the fluid [kg/m^3^].
             mu_f: Dynamic viscosity of the fluid [Pa⋅s].
             cp_f: Specific heat capacity of the fluid [J/kg⋅K].
         """
-        k_f = np.empty_like(T_f)
-        rho_f = np.empty_like(T_f)
-        mu_f = np.empty_like(T_f)
-        cp_f = np.empty_like(T_f)
-        for i in range(T_f.size):
-            k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "T", T_f[i], "P", P[i], "CO2")
-            rho_f[i] = CP.CoolProp.PropsSI("DMASS", "T", T_f[i], "P", P[i], "CO2")
-            mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "T", T_f[i], "P", P[i], "CO2")
-            cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "T", T_f[i], "P", P[i], "CO2")
-        return k_f, rho_f, mu_f, cp_f
+        T_f = np.empty_like(i_f)
+        k_f = np.empty_like(i_f)
+        rho_f = np.empty_like(i_f)
+        mu_f = np.empty_like(i_f)
+        cp_f = np.empty_like(i_f)
+        for i in range(i_f.size):
+            T_f[i] = CP.CoolProp.PropsSI("T", "H", i_f[i], "P", P[i], "CO2")
+            k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "H", i_f[i], "P", P[i], "CO2")
+            rho_f[i] = CP.CoolProp.PropsSI("DMASS", "H", i_f[i], "P", P[i], "CO2")
+            mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "H", i_f[i], "P", P[i], "CO2")
+            cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "H", i_f[i], "P", P[i], "CO2")
+        return T_f, k_f, rho_f, mu_f, cp_f
 
     @staticmethod
     @njit(parallel=True)
