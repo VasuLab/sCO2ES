@@ -19,6 +19,8 @@ class PackedBedModel:
         n: Number of nodes in the axial direction.
         m: Number of wall or lid nodes in the radial or axial directions, respectively.
         nodes: Total number of nodes (`2(n+m) + nm`).
+        A_cs: Cross-sectional area of the packed bed [m^2^].
+        V_node: Volume of a packed bed node [m].
         r_wall (m): Radial positions of wall nodes from centerline [m].
         r_bound (m + 1): Radial positions of wall cell boundaries from centerline [m].
         z_top_lid (m): Axial positions of top lid nodes from charging inlet in direction of flow [m].
@@ -99,13 +101,15 @@ class PackedBedModel:
         self.D = D
         self.d = d
         self.eps = eps
+        self.A_cs = np.pi * self.D ** 2 / 4
+        self.V_node = np.pi * self.D ** 2 / 4 * self.dz
 
         # Fluid properties
         self.P_intf = np.full((1, n + 1), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
-        self.i_f = self.calculate_fluid_enthalpy(self.T_f, self.interp_pressure(self.P_intf[0]))
-        _, self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(
-            self.i_f, self.interp_pressure(self.P_intf[0]))
+        self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self.interp_pressure(self.P_intf[0]))
+        self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(
+            self.i_f, self.interp_pressure(self.P_intf[0]))[1:]
 
         # Solid properties
         self.T_s = np.full((1, n), T_d, dtype=float)
@@ -113,9 +117,9 @@ class PackedBedModel:
         self.E_s, self.k_s = self.calculate_solid_props(self.T_s[0])
 
         # Field variables
-        self.m_dot = np.zeros(n)  # Initially stationary
+        self.m_dot = np.zeros(n + 1)  # Initially stationary
         self.k_eff, self.h_wall, self.h_v = self.calculate_heat_transfer_coeffs(
-            self.m_dot, self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+            0, self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
 
         # Wall/lid parameters
         self.T_env = T_env
@@ -146,8 +150,7 @@ class PackedBedModel:
         self.V_wall = self.A_wall_z * self.dz
         self.A_wall_r = 2 * np.pi * self.dz * self.r_bound
 
-        self.A_lid = np.pi * self.D ** 2 / 4
-        self.V_bottom_lid = self.A_lid * np.diff(dx_bound)
+        self.V_bottom_lid = self.A_cs * np.diff(dx_bound)
         self.V_top_lid = self.V_bottom_lid[::-1]
 
         # Initialize wall/lid temperature distribution
@@ -217,7 +220,7 @@ class PackedBedModel:
         """A function that indicates when the solver should stop."""
         ...
 
-    def step(self, dt):
+    def step(self, m_dot_inlet, P_inlet, dt,):
         """
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
 
@@ -228,48 +231,67 @@ class PackedBedModel:
 
         # Next iteration state arrays
         P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
+        P_intf[0] = P_inlet  # Set inlet pressure
+        m_dot = np.copy(self.m_dot)  # Mass flow rate at node interfaces
+        m_dot[0] = m_dot_inlet  # Set inlet mass flow rate
+        i_f = np.copy(self.i_f)
         T_f = np.copy(self.T_f[-1])
+        rho_f = np.copy(self.rho_f)
         T_s = np.copy(self.T_s[-1])
         T_wall = np.copy(self.T_wall[-1])
         T_top_lid = np.copy(self.T_top_lid[-1])
         T_bottom_lid = np.copy(self.T_bottom_lid[-1])
-        i_f = np.copy(self.i_f)
-        rho_f = np.copy(self.rho_f)
-        m_dot = np.copy(self.m_dot)
         h_v = np.copy(self.h_v)
         h_wall = np.copy(self.h_wall)
 
         for b in range(self.max_iter):
             # Previous iteration state arrays
             P_intf_prev = np.copy(P_intf)
+            m_dot_prev = np.copy(m_dot)
+            i_f_prev = np.copy(i_f)
             T_f_prev = np.copy(T_f)
+            rho_f_prev = np.copy(rho_f)
             T_s_prev = np.copy(T_s)
             T_wall_prev = np.copy(T_wall)
             T_top_lid_prev = np.copy(T_top_lid)
             T_bottom_lid_prev = np.copy(T_bottom_lid)
-            i_f_prev = np.copy(i_f)
-            rho_f_prev = np.copy(rho_f)
-            m_dot_prev = np.copy(m_dot)
             h_v_prev = np.copy(h_v)
             h_wall_prev = np.copy(h_wall)
 
-            # Update thermodynamic properties
+            # Solve for fluid enthalpy and solid temperature
+            g = T_f_prev / i_f_prev  # Calculate temperature-enthalpy coupling factor
+            i_f, T_s = self.solve_fluid_solid_bed(...)
+
+            # Update fluid and solid thermodynamic properties
             T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self.interp_pressure(P_intf))
             E_s, k_s = self.calculate_solid_props(T_s)
-            k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s)
+
+            # Update mass flow rate and pressure at interfaces
+            m_dot[1:] = m_dot[0] - np.add.accumulate(
+                self.eps * self.V_node * (rho_f - self.rho_f[-1]) / dt
+            )
+            G = (m_dot[-1:] + m_dot[1:]) / (2 * self.eps * self.A_cs)  # Effective mass flow rate per cross-section
+            P_intf[1:] = P_intf[0] - np.add.accumulate(
+                self.pressure_drop(self.dz, rho_f, mu_f, G, self.eps, self.d)
+            )
+
+            # Update heat transfer coefficients
+            k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(
+                (m_dot[-1:] + m_dot[1:]) / 2, T_f, k_f, cp_f, mu_f, k_s, E_s
+            )
 
             # Solve for lid/wall temperatures
             T_top_lid = self.solve_lid_temperature(
                 self.T_top_lid[-1], T_f[0], self.T_env, h_wall[0],
                 self.k_top_lid, self.rho_top_lid, self.cp_top_lid,
-                self.z_top_lid, self.V_top_lid, self.A_lid, dt,
+                self.z_top_lid, self.V_top_lid, self.A_cs, dt,
                 reverse=False
             )
 
             T_bottom_lid = self.solve_lid_temperature(
                 self.T_bottom_lid[-1], T_f[-1], self.T_env, h_wall[-1],
                 self.k_bottom_lid, self.rho_bottom_lid, self.cp_bottom_lid,
-                self.z_bottom_lid, self.V_bottom_lid, self.A_lid, dt,
+                self.z_bottom_lid, self.V_bottom_lid, self.A_cs, dt,
                 reverse=True
             )
 
@@ -282,18 +304,18 @@ class PackedBedModel:
 
             # Check convergence
             converged = np.all([
-                # np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
-                # np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
                 np.all(np.abs(P_intf - P_intf_prev) <= self.atol_P),
+                np.all(np.abs(T_f - T_f_prev) <= self.atol_T_f),
+                np.all(np.abs(T_s - T_s_prev) <= self.atol_T_s),
                 np.all(np.abs(T_wall - T_wall_prev) <= self.rtol_T_wall * T_wall),
                 np.all(np.abs(T_top_lid - T_top_lid_prev) <= self.rtol_T_wall * T_top_lid),
                 np.all(np.abs(T_bottom_lid - T_bottom_lid_prev) <= self.rtol_T_wall * T_bottom_lid),
-                # np.all(np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f),
-                # np.all(np.abs(rho_f - rho_f_prev) <= self.rtol_rho_f * rho_f),
-                # np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
-                # np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
-                # np.all(np.abs(h_v - h_v_prev) <= self.rtol_h * h_v),
-                # np.all(np.abs(h_wall - h_wall_prev) <= self.rtol_h * h_wall),
+                np.all(np.abs(i_f - i_f_prev) <= self.rtol_i_f * i_f),
+                np.all(np.abs(rho_f - rho_f_prev) <= self.rtol_rho_f * rho_f),
+                np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
+                np.all(np.abs(m_dot - m_dot_prev) <= self.rtol_m_dot * m_dot),
+                np.all(np.abs(h_v - h_v_prev) <= self.rtol_h * h_v),
+                np.all(np.abs(h_wall - h_wall_prev) <= self.rtol_h * h_wall),
             ])
 
             if converged:
@@ -398,7 +420,7 @@ class PackedBedModel:
 
         where the domain is discretized with `n` nodes in the axial direction and `m` in the radial
         direction, and the wall temperature `T_wall` has the shape `(n, m)`.
-        
+
         Parameters:
              T_wall: Wall temperature for the previous time step [K].
              T_f: Fluid temperature estimate for the next time step [K].
@@ -501,7 +523,6 @@ class PackedBedModel:
         i_f = np.empty_like(T_f)
         for i in range(T_f.size):
             i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
-
         return i_f
 
     @staticmethod
@@ -851,7 +872,7 @@ class PackedBedModel:
         return k_stag_eff * k_stag_wall / (k_stag_eff - k_stag_wall / 2)
 
     @staticmethod
-    def pressure_drop(dz, rho_f, mu_f, G, eps, d, psi, *, xi1: float = 180, xi2: float = 1.8):
+    def pressure_drop(dz, rho_f, mu_f, G, eps, d, *, psi=0.9, xi1: float = 180, xi2: float = 1.8):
         r"""
         Calculates the pressure drop using the modified Ergun's equation[^1]
 
