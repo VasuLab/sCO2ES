@@ -101,10 +101,10 @@ class PackedBedModel:
         self.eps = eps
 
         # Fluid properties
-        self.P = np.full((1, n + 1), P)
+        self.P = np.full((1, n), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
         self.i_f = self.calculate_fluid_enthalpy(self.T_f, self.P)
-        _, self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.T_f[0], self.P[0])
+        _, self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(self.i_f, self.P)
 
         # Solid properties
         self.T_s = np.full((1, n), T_d, dtype=float)
@@ -492,7 +492,7 @@ class PackedBedModel:
         """
         i_f = np.empty_like(T_f)
         for i in range(T_f.size):
-            i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P, "CO2")
+            i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
         return i_f
 
     @staticmethod
