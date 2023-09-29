@@ -495,8 +495,6 @@ class PackedBedModel:
 
             b[s] = (1 - eps) * V * rho_s * (e_s_0[i] - alpha2[i]) / dt  # Previous time step
 
-        print(np.inf in a)
-        print(np.inf in b)
         x = np.linalg.solve(a, b)
         return x[:n], x[n:]
 
