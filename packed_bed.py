@@ -107,9 +107,9 @@ class PackedBedModel:
         # Fluid properties
         self.P_intf = np.full((1, n + 1), P)
         self.T_f = np.full((1, n), T_d, dtype=float)
-        self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self.interp_pressure(self.P_intf[0]))
+        self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self._interp(self.P_intf[0]))
         self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(
-            self.i_f, self.interp_pressure(self.P_intf[0]))[1:]
+            self.i_f, self._interp(self.P_intf[0]))[1:]
 
         # Solid properties
         self.T_s = np.full((1, n), T_d, dtype=float)
@@ -139,7 +139,7 @@ class PackedBedModel:
 
         # Determine wall grid properties
         dx_bound = np.add.accumulate(np.insert(self.dr, 0, 0))
-        dx_center = (dx_bound[1:] + dx_bound[:-1]) / 2
+        dx_center = self._interp(dx_bound)
 
         self.r_bound = self.D / 2 + dx_bound
         self.r_wall = self.D / 2 + dx_center
@@ -198,11 +198,11 @@ class PackedBedModel:
         self.cp_top_lid = self.cp_wall[::-1]
 
     @staticmethod
-    def interp_pressure(P_intf):
+    def _interp(x):
         """
-        Returns the interpolated pressure at fluid node centers from pressure at the interfaces.
+        Returns the interpolated quantity at fluid node centers from the quantity at the interfaces.
         """
-        return (P_intf[:-1] + P_intf[1:]) / 2
+        return (x[:-1] + x[1:]) / 2
 
     def advance(self, t):
         """
@@ -263,21 +263,22 @@ class PackedBedModel:
             i_f, T_s = self.solve_fluid_solid_bed(...)
 
             # Update fluid and solid thermodynamic properties
-            T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self.interp_pressure(P_intf))
+            T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self._interp(P_intf))
             E_s, k_s = self.calculate_solid_props(T_s)
 
             # Update mass flow rate and pressure at interfaces
             m_dot[1:] = m_dot[0] - np.add.accumulate(
                 self.eps * self.V_node * (rho_f - self.rho_f[-1]) / dt
             )
-            G = (m_dot[-1:] + m_dot[1:]) / (2 * self.eps * self.A_cs)  # Effective mass flow rate per cross-section
+            G = self._interp(m_dot) / (self.eps * self.A_cs)  # Effective mass flow rate per cross-section
+
             P_intf[1:] = P_intf[0] - np.add.accumulate(
                 self.pressure_drop(self.dz, rho_f, mu_f, G, self.eps, self.d)
             )
 
             # Update heat transfer coefficients
             k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(
-                (m_dot[-1:] + m_dot[1:]) / 2, T_f, k_f, cp_f, mu_f, k_s, E_s
+                self._interp(m_dot), T_f, k_f, cp_f, mu_f, k_s, E_s
             )
 
             # Solve for lid/wall temperatures
