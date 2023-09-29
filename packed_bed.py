@@ -102,6 +102,7 @@ class PackedBedModel:
         self.d = d
         self.eps = eps
         self.A_cs = np.pi * self.D ** 2 / 4
+        self.A_node_wall_intf = np.pi * self.D * self.dz
         self.V_node = np.pi * self.D ** 2 / 4 * self.dz
 
         # Fluid properties
@@ -119,7 +120,7 @@ class PackedBedModel:
         # Field variables
         self.m_dot = np.zeros(n + 1)  # Initially stationary
         self.k_eff, self.h_wall, self.h_v = self.calculate_heat_transfer_coeffs(
-            0, self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+            self._interp(self.m_dot), self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
 
         # Wall/lid parameters
         self.T_env = T_env
@@ -220,7 +221,7 @@ class PackedBedModel:
         """A function that indicates when the solver should stop."""
         ...
 
-    def step(self, m_dot_inlet, P_inlet, dt,):
+    def step(self, dt, T_inlet, P_inlet, m_dot_inlet):
         """
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
 
@@ -228,6 +229,8 @@ class PackedBedModel:
             Number of iterations required for convergence.
 
         """
+
+        i_inlet = self.calculate_fluid_enthalpy([T_inlet], [P_inlet])[0]
 
         # Next iteration state arrays
         P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
@@ -255,12 +258,40 @@ class PackedBedModel:
             T_wall_prev = np.copy(T_wall)
             T_top_lid_prev = np.copy(T_top_lid)
             T_bottom_lid_prev = np.copy(T_bottom_lid)
-            h_v_prev = np.copy(h_v)
             h_wall_prev = np.copy(h_wall)
+            h_v_prev = np.copy(h_v)
 
             # Solve for fluid enthalpy and solid temperature
             g = T_f_prev / i_f_prev  # Calculate temperature-enthalpy coupling factor
-            i_f, T_s = self.solve_fluid_solid_bed(...)
+            alpha1, alpha2 = self.calculate_solid_linearized_coeffs(T_s_prev)
+            e_s_0 = self.calculate_solid_internal_energy(self.T_s[-1])
+
+            i_f, T_s = self.solve_fluid_solid_bed(
+                self.i_f,
+                i_inlet,
+                e_s_0,
+                g,
+                P_intf,
+                self.P_intf[-1],
+                rho_f,
+                self.rho_f,
+                self.rho_s,
+                alpha1,
+                alpha2,
+                m_dot,
+                T_wall[:, 0],
+                self.T_top_lid[-1, -1],
+                self.T_bottom_lid[-1, 0],
+                self.k_eff,
+                h_wall,
+                h_v,
+                self.A_node_wall_intf,
+                self.A_cs,
+                self.V_node,
+                self.eps,
+                self.dz,
+                dt
+            )
 
             # Update fluid and solid thermodynamic properties
             T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self._interp(P_intf))
@@ -332,10 +363,142 @@ class PackedBedModel:
                 self.m_dot = m_dot
                 self.h_v = h_v
                 self.h_wall = h_wall
+                self.k_eff = k_eff
 
                 return b + 1
 
         raise Exception("Maximum number of iterations reached without convergence.")
+
+    @staticmethod
+    # @njit(parallel=True)
+    def solve_fluid_solid_bed(
+            i_f_0,
+            i_inlet,
+            e_s_0,
+            g,
+            P_intf,
+            P_intf_0,
+            rho_f,
+            rho_0,
+            rho_s,
+            alpha1,
+            alpha2,
+            m_dot,
+            T_wall,
+            T_lid_inlet,
+            T_lid_outlet,
+            k_eff,
+            h_wall,
+            h_v,
+            A_wall,
+            A_cs,
+            V,
+            eps,
+            dz,
+            dt
+    ):
+        """
+        :material-lightning-bolt:{ .parallel } Parallelized
+
+        Solves for the fluid and solid temperatures for the next time step.
+
+        Parameters:
+            i_f_0: Fluid enthalpies for the previous time step [J/kg].
+            g: Fluid temperature-enthalpy coupling factor [K⋅kg/J].
+            P_intf: Pressure estimate at the interfaces for the next time step [Pa].
+            P_intf_0: Pressure at the interfaces for the previous time step [Pa].
+            rho_f: Fluid density estimates for the next time step [kg/m^3^].
+            rho_0: Fluid densities for the previous time step [kg/m^3^].
+            m_dot: Mass flow rate estimate at node interfaces [kg/s].
+
+            T_wall: Wall interface temperature [K].
+            T_lid_inlet: Temperature of the lid at the inlet [K].
+            T_lid_outlet: Temperature of the lid at the outlet [K].
+
+            k_eff: TODO
+            h_wall: Wall heat transfer coefficient [W/m^2^⋅K].
+            h_v: Volumetric heat transfer coefficient [W/m^3^⋅K].
+
+            A_wall: Surface area of the node wall boundary [m^2^].
+            A_cs: Cross-sectional area [m^2^].
+            V: Node volume [m^3^].
+            eps: Void fraction [-].
+            dt: Time step [s].
+
+        """
+        # Matrix setup
+        n = i_f_0.size
+        a = np.zeros((2*n, 2*n))
+        b = np.zeros(2*n)
+
+        # Calculate effective thermal conductivity at interfaces
+        k_eff_intf = 2 * k_eff[:-1] * k_eff[1:] / (k_eff[:-1] + k_eff[1:])
+
+        # Calculate density at interfaces
+        rho_intf = np.empty(n+1)
+        rho_intf[1:-1] = (rho_f[:-1] + rho_f[1:]) / 2  # Interpolated density
+        rho_intf[0] = rho_f[0] + 0.5 * (rho_f[0] - rho_f[1])  # Extrapolated density to dz/2 from center
+        rho_intf[-1] = rho_f[-1] + 0.5 * (rho_f[-1] - rho_f[-2])
+
+        # Calculate pressure at node centers
+        P = (P_intf[:-1] + P_intf[1:]) / 2
+        P_0 = (P_intf_0[:-1] + P_intf_0[1:]) / 2
+
+        # Fill matrices
+        for i in prange(n):
+            f = i
+            s = i + n
+
+            # Fluid enthalpy equation
+            a[f, f] = (
+                eps * V * rho_f[i] / dt
+                + m_dot[i+1]
+                + h_v[i] * V * g[i]  # Heat transfer to solid phase
+                + g[i] * h_wall[i] * A_wall  # Heat loss to walls
+            )
+            a[f, s] = -h_v[i] * V  # Heat transfer to solid phase
+
+            b[f] = (
+                eps * V * rho_0[i] * i_f_0[i] / dt
+                + h_wall[i] * A_wall * T_wall[i]  # Heat loss to walls
+                + eps * V * (P[i] - P_0[i]) / dt
+                + m_dot[i+1] / rho_intf[i+1] * (P_intf[i+1] - P[i])
+                + m_dot[i] / rho_intf[i] * (P[i] - P_intf[i])
+            )
+
+            if i != 0:  # Energy flow from upstream node
+                a[f, f-1] = -m_dot[i]
+            else:
+                b[f] += m_dot[i] * i_inlet
+
+            if i == 0:  # Top lid boundary
+                a[f, f] += g[0] * h_wall[0] * A_cs
+                b[f] += h_wall[0] * A_cs * T_lid_inlet
+
+            if i == n-1:  # Bottom lid boundary
+                a[f, f] += g[i] * h_wall[i] * A_cs
+                b[f] += h_wall[i] * A_cs * T_lid_outlet
+
+            # Solid temperature equation
+            a[s, s] = (
+                    (1 - eps) * V * rho_s * alpha1[i] / dt
+                    + h_v[i] * V  # Heat transfer from fluid
+            )
+            a[s, f] = -h_v[i] * V * g[i]  # Heat transfer from fluid
+
+            if i != 0:  # Inlet boundary
+                a[s, s] += k_eff_intf[i-1] * A_cs / dz
+                a[s, s-1] = -k_eff_intf[i-1] * A_cs / dz
+            if i != n-1:  # Outlet boundary
+                a[s, s] += k_eff_intf[i] * A_cs / dz
+                a[s, s+1] = -k_eff_intf[i] * A_cs / dz
+
+            b[s] = (1 - eps) * V * rho_s * (e_s_0[i] - alpha2[i]) / dt  # Previous time step
+
+        print(np.inf in a)
+        print(np.inf in b)
+        x = np.linalg.solve(a, b)
+        return x[:n], x[n:]
 
     @staticmethod
     @njit(parallel=True)
@@ -521,6 +684,8 @@ class PackedBedModel:
             T_f: Temperature [K].
             P: Pressure [Pa].
         """
+        T_f = np.asarray(T_f)
+        P = np.asarray(P)
         i_f = np.empty_like(T_f)
         for i in range(T_f.size):
             i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
@@ -555,6 +720,33 @@ class PackedBedModel:
             mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "H", i_f[i], "P", P[i], "CO2")
             cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "H", i_f[i], "P", P[i], "CO2")
         return T_f, k_f, rho_f, mu_f, cp_f
+
+    @staticmethod
+    def calculate_solid_internal_energy(T_s):
+        """
+        Parameters:
+            T_s: Estimate for solid temperature [K].
+
+        """
+        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
+        T_ref = 25 + 273
+        return psi1 * (psi2 * (T_s - T_ref) + psi3 * (T_s**2 - T_ref**2) / 2 - psi4 * (1 / T_s - 1 / T_ref))
+
+    @staticmethod
+    def calculate_solid_linearized_coeffs(T_s):
+        """
+        Parameters:
+            T_s: Estimate for solid temperature [K].
+
+        Returns:
+            alpha1: First linearized parameter.
+            alpha2: Second linearized parameter.
+        """
+        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
+        T_ref = 25 + 273
+        alpha1 = psi1 * (psi2 + psi3 * T_s + psi4 / T_s**2)
+        alpha2 = -psi1 * (psi2 * T_ref + psi3 * (T_s**2 - T_ref**2) / 2 + psi4 * (2 / T_s - 1 / T_ref))
+        return alpha1, alpha2
 
     @staticmethod
     @njit(parallel=True)
@@ -713,6 +905,7 @@ class PackedBedModel:
         )
 
     @staticmethod
+    @np.vectorize
     def volumetric_convective_heat_transfer_coeff(m_dot, k_f, cp_f, eps, d, D):
         r"""
         Calculates the volumetric convective heat transfer coefficient as the product of the convective heat
