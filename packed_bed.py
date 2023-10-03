@@ -299,7 +299,7 @@ class PackedBedModel:
 
             # Update mass flow rate and pressure at interfaces
             m_dot[1:] = m_dot[0] - np.add.accumulate(
-                self.eps * self.V_node * (rho_f - self.rho_f[-1]) / dt
+                self.eps * self.V_node * (rho_f - self.rho_f) / dt
             )
             G = self._interp(m_dot) / (self.eps * self.A_cs)  # Effective mass flow rate per cross-section
 
