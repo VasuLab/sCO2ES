@@ -743,7 +743,7 @@ class PackedBedModel:
         psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
         T_ref = 25 + 273
         alpha1 = psi1 * (psi2 + psi3 * T_s + psi4 / T_s**2)
-        alpha2 = -psi1 * (psi2 * T_ref + psi3 * (T_s**2 - T_ref**2) / 2 + psi4 * (2 / T_s - 1 / T_ref))
+        alpha2 = -psi1 * (psi2 * T_ref + psi3 * (T_s**2 + T_ref**2) / 2 + psi4 * (2 / T_s - 1 / T_ref))
         return alpha1, alpha2
 
     @staticmethod
