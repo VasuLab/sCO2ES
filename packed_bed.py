@@ -56,6 +56,8 @@ class PackedBedModel:
     max_iter: int = 100
     """Maximum number of iterations for the loop."""
 
+    fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
+
     def __init__(
             self,
             T_d: float,
@@ -702,8 +704,7 @@ class PackedBedModel:
             i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
         return i_f
 
-    @staticmethod
-    def calculate_fluid_props(i_f, P):
+    def calculate_fluid_props(self, i_f, P):
         """
         Returns the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
         using [`CoolProp`](http://www.coolprop.org/).
@@ -725,11 +726,12 @@ class PackedBedModel:
         mu_f = np.empty_like(i_f)
         cp_f = np.empty_like(i_f)
         for i in range(i_f.size):
-            T_f[i] = CP.CoolProp.PropsSI("T", "H", i_f[i], "P", P[i], "CO2")
-            k_f[i] = CP.CoolProp.PropsSI("CONDUCTIVITY", "H", i_f[i], "P", P[i], "CO2")
-            rho_f[i] = CP.CoolProp.PropsSI("DMASS", "H", i_f[i], "P", P[i], "CO2")
-            mu_f[i] = CP.CoolProp.PropsSI("VISCOSITY", "H", i_f[i], "P", P[i], "CO2")
-            cp_f[i] = CP.CoolProp.PropsSI("CPMASS", "H", i_f[i], "P", P[i], "CO2")
+            self.fluid.update(CP.HmassP_INPUTS, i_f[i], P[i])
+            T_f[i] = self.fluid.T()
+            k_f[i] = self.fluid.conductivity()
+            rho_f[i] = self.fluid.rhomass()
+            mu_f[i] = self.fluid.viscosity()
+            cp_f[i] = self.fluid.cpmass()
         return T_f, k_f, rho_f, mu_f, cp_f
 
     @staticmethod
