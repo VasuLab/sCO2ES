@@ -2,6 +2,7 @@ import numpy as np
 import numpy.typing as npt
 from numba import njit, prange
 from matplotlib import pyplot as plt
+import scipy
 import CoolProp as CP
 
 
@@ -569,6 +570,54 @@ class PackedBedModel:
 
     @staticmethod
     @njit(parallel=True)
+    def _setup_wall_temperature_matrix(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
+        n, m = T_wall.shape
+        b = np.zeros(m * n)
+
+        center = np.zeros(n * m)
+        backward = np.zeros(n * m - 1)  # -z
+        forward = np.zeros(n * m - 1)  # +z
+        internal = np.zeros(n * (m - 1))  # -r
+        external = np.zeros(n * (m - 1))  # +r
+
+        # Calculate thermal conductivity at interfaces using harmonic mean
+        k_intf = (dr[:-1] + dr[1:]) / (dr[:-1] / k[:-1] + dr[1:] / k[1:])
+
+        # Fill matrix
+        for i in prange(n):
+            for j in prange(m):
+                x = j * n + i  # Coordinate conversion
+
+                center[x] = V[j] * rho[j] * cp[j] / dt
+                b[x] = V[j] * rho[j] * cp[j] / dt * T_wall[i, j]  # previous time step
+
+                # Radial boundary conditions
+                if j == 0:  # Interior wall node with heat transfer to fluid
+                    center[x] += h_wall[i] * A_r[0]
+                    b[x] += h_wall[i] * A_r[0] * T_f[i]
+                else:
+                    center[x] += k_intf[j - 1] * A_r[j] / (r[j] - r[j - 1])
+                    internal[x - n] = -k_intf[j - 1] * A_r[j] / (r[j] - r[j - 1])
+
+                if j == m - 1:  # Exterior wall node with heat transfer to environment
+                    center[x] += 2 * k[j] * A_r[j + 1] / dr[j]
+                    b[x] += 2 * k[j] * A_r[j + 1] / dr[j] * T_env
+                else:
+                    center[x] += k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
+                    external[x] = -k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
+
+                # Axial boundary conditions
+                if i != 0:
+                    center[x] += k[j] * A_z[j] / dz
+                    backward[x - 1] = -k[j] * A_z[j] / dz
+
+                if i != n - 1:
+                    center[x] += k[j] * A_z[j] / dz
+                    forward[x] = -k[j] * A_z[j] / dz
+
+        return [internal, backward, center, forward, external], b
+
+    @staticmethod
     def solve_wall_temperature(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
         """
         :material-lightning-bolt:{ .parallel } Parallelized
@@ -599,48 +648,12 @@ class PackedBedModel:
              A_z: Area of node interfaces in the axial direction [m^2^].
              dt: Time step [s].
         """
-        # Matrix setup
         n, m = T_wall.shape
-        a = np.zeros((m * n, m * n))
-        b = np.zeros(m * n)
 
-        # Calculate thermal conductivity at interfaces using harmonic mean
-        k_intf = (dr[:-1] + dr[1:]) / (dr[:-1] / k[:-1] + dr[1:] / k[1:])
-
-        # Fill matrix
-        for i in prange(n):
-            for j in prange(m):
-                x = j * n + i  # Coordinate conversion
-
-                a[x, x] = V[j] * rho[j] * cp[j] / dt  # next time step
-                b[x] = V[j] * rho[j] * cp[j] / dt * T_wall[i, j]  # previous time step
-
-                # Radial boundary conditions
-                if j == 0:  # Interior wall node with heat transfer to fluid
-                    a[x, x] += h_wall[i] * A_r[0]
-                    b[x] += h_wall[i] * A_r[0] * T_f[i]
-                else:
-                    a[x, x] += k_intf[j-1] * A_r[j] / (r[j] - r[j - 1])
-                    a[x, x-n] = -k_intf[j-1] * A_r[j] / (r[j] - r[j - 1])
-
-                if j == m-1:  # Exterior wall node with heat transfer to environment
-                    a[x, x] += 2 * k[j] * A_r[j + 1] / dr[j]
-                    b[x] += 2 * k[j] * A_r[j + 1] / dr[j] * T_env
-                else:
-                    a[x, x] += k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
-                    a[x, x+n] = -k_intf[j] * A_r[j + 1] / (r[j + 1] - r[j])
-
-                # Axial boundary conditions
-                if i != 0:
-                    a[x, x] += k[j] * A_z[j] / dz
-                    a[x, x-1] = -k[j] * A_z[j] / dz
-
-                if i != n-1:
-                    a[x, x] += k[j] * A_z[j] / dz
-                    a[x, x+1] = -k[j] * A_z[j] / dz
-
-        # Solve
-        return np.linalg.solve(a, b).reshape((m, n)).T
+        diags, b = PackedBedModel._setup_wall_temperature_matrix(
+            T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt)
+        A_sparse = scipy.sparse.diags(diags, offsets=[-n, -1, 0, 1, n], format="csr")
+        return scipy.sparse.linalg.spsolve(A_sparse, b).reshape((m, n)).T
 
     def calculate_heat_transfer_coeffs(self, m_dot, T_f, k_f, cp_f, mu_f, k_s, E_s):
         """
