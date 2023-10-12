@@ -316,6 +316,7 @@ class PackedBedModel:
         T_wall = np.copy(self.T_wall[-1])
         T_top_lid = np.copy(self.T_top_lid[-1])
         T_bottom_lid = np.copy(self.T_bottom_lid[-1])
+        k_eff = np.copy(self.k_eff)
         h_v = np.copy(self.h_v)
         h_wall = np.copy(self.h_wall)
 
@@ -343,7 +344,7 @@ class PackedBedModel:
                 P_intf, self.P_intf[-1], rho_f, self.rho_f, self.rho_s,
                 alpha1, alpha2, m_dot,
                 T_wall[:, 0], self.T_top_lid[-1, -1], self.T_bottom_lid[-1, 0],
-                self.k_eff, h_wall, h_v,
+                k_eff, h_wall, h_v,
                 self.A_node_wall_intf, self.A_cs, self.V_node,
                 self.eps, self.dz, dt
             )
