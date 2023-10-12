@@ -218,6 +218,12 @@ class PackedBedModel:
         """
         return (x[:-1] + x[1:]) / 2
 
+    def time(self, s: float = 0, *, m: float = 0, h: float = 0):
+        """
+        A function for retrieving the index of the
+        """
+        return np.argwhere(self.t == s + 60 * (m + 60 * h))[0][0]
+
     def advance(
             self,
             T_inlet: float,
