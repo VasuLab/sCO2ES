@@ -1,9 +1,19 @@
+from typing import Callable
+
 import numpy as np
 import numpy.typing as npt
 from numba import njit, prange
 from matplotlib import pyplot as plt
 import scipy
 import CoolProp as CP
+
+
+class ModelAssumptionError(Exception):
+    """Exception raised when a model assumption is not met."""
+
+
+class StopCriterionError(Exception):
+    """Exception raised when the charge/discharge stopping criterion is not met within the allowable time."""
 
 
 class PackedBedModel:
@@ -208,29 +218,82 @@ class PackedBedModel:
         """
         return (x[:-1] + x[1:]) / 2
 
-    def advance(self, t):
+    def advance(
+            self,
+            T_inlet: float,
+            T_outlet_stop: float,
+            P_inlet: float,
+            m_dot_inlet: float,
+            *,
+            dt: float = 10,
+            t_max: float = 12*60*60,
+            charge: bool = True,
+            callback: Callable[[], None] = None
+    ):
         """
-        The main solver loop.
+        Advances the simulation until the charge/discharge stopping criterion is satisfied.
+
+        Parameters:
+            T_inlet: Inlet fluid temperature [K].
+            T_outlet_stop: Outlet fluid temperature [K] condition for charge/discharge stopping.
+            P_inlet: Pressure at the inlet [Pa].
+            m_dot_inlet: Mass flow rate of the inlet stream [kg/s].
+            dt: Time step [s].
+            t_max: Maximum allowed charging/discharging time [s].
+            charge: Flag indicating whether the system is charging (`True`) or discharging (`False`).
+            callback: Callback function for each time step.
+
+        Returns:
+            Time at which the charging/discharging stop criterion was satisfied.
+
+        Raises:
+            ModelAssumptionError: Raised if the Biot number exceeds the acceptable threshold ($Bi > 0.1$).
+            StopCriterionError: Raised if the stop criterion are not met within the maximum allowed
+                charging/discharging time (`t_max`).
         """
 
-        while not self.stop():
-            self.step()
+        t_start = self.t[-1]
+
+        while True:
+            self.step(T_inlet, P_inlet, m_dot_inlet, dt, charge=charge)
+            if callback is not None:
+                callback()
 
             Bi = self.biot_number(self.h_v, self.d, self.eps, self.k_s)
-            if not np.all(Bi <= 0.1):
-                raise Exception("Biot number exceeded acceptable threshold.")
+            if not np.all(Bi <= 0.1):  # Check lumped capacitance assumption
+                raise ModelAssumptionError("Biot number exceeded acceptable threshold (Bi > 0.1).")
 
-    def stop(self) -> bool:
-        """A function that indicates when the solver should stop."""
-        ...
+            t = self.t[-1] - t_start  # Current charge/discharge time
 
-    def step(self, dt, T_inlet, P_inlet, m_dot_inlet):
+            if charge:  # Check charge stopping criterion
+                T_outlet = self.T_f[-1, -1]
+                if T_outlet >= T_outlet_stop:
+                    return t
+
+            else:  # Check discharge stopping criterion
+                T_outlet = self.T_f[-1, 0]
+                if T_outlet <= T_outlet_stop:
+                    return t
+
+            if t >= t_max:  # Check charge/discharge time limit
+                raise StopCriterionError(
+                    f"{'Charging' if charge else 'Discharging'} stop criterion not satisfied within "
+                    f"the maximum allowed {'charging' if charge else 'discharging'} time."
+                )
+
+    def step(self, T_inlet: float, P_inlet: float, m_dot_inlet: float, dt, *, charge: bool = True):
         """
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
 
+        Parameters:
+            T_inlet: Temperature of the inlet stream [K].
+            P_inlet: Pressure at the inlet [Pa].
+            m_dot_inlet: Mass flow rate of the inlet stream [kg/s].
+            dt: Time step [s].
+            charge: Flag indicating whether the system is charging (`True`) or discharging (`False`).
+
         Returns:
             Number of iterations required for convergence.
-
         """
 
         i_inlet = self.calculate_fluid_enthalpy([T_inlet], [P_inlet])[0]
@@ -270,30 +333,13 @@ class PackedBedModel:
             e_s_0 = self.calculate_solid_internal_energy(self.T_s[-1])
 
             i_f, T_s = self.solve_fluid_solid_bed(
-                self.i_f,
-                i_inlet,
-                e_s_0,
-                g,
-                P_intf,
-                self.P_intf[-1],
-                rho_f,
-                self.rho_f,
-                self.rho_s,
-                alpha1,
-                alpha2,
-                m_dot,
-                T_wall[:, 0],
-                self.T_top_lid[-1, -1],
-                self.T_bottom_lid[-1, 0],
-                self.k_eff,
-                h_wall,
-                h_v,
-                self.A_node_wall_intf,
-                self.A_cs,
-                self.V_node,
-                self.eps,
-                self.dz,
-                dt
+                self.i_f, i_inlet, e_s_0, g,
+                P_intf, self.P_intf[-1], rho_f, self.rho_f, self.rho_s,
+                alpha1, alpha2, m_dot,
+                T_wall[:, 0], self.T_top_lid[-1, -1], self.T_bottom_lid[-1, 0],
+                self.k_eff, h_wall, h_v,
+                self.A_node_wall_intf, self.A_cs, self.V_node,
+                self.eps, self.dz, dt
             )
 
             # Update fluid and solid thermodynamic properties
@@ -373,7 +419,7 @@ class PackedBedModel:
         raise Exception("Maximum number of iterations reached without convergence.")
 
     @staticmethod
-    # @njit(parallel=True)
+    @njit(parallel=True)
     def solve_fluid_solid_bed(
             i_f_0,
             i_inlet,
