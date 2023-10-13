@@ -70,7 +70,7 @@ class PackedBedModel:
 
     def __init__(
             self,
-            T_d: float,
+            T_initial: float,
             P: float,
             L: float,
             D: float,
@@ -87,7 +87,7 @@ class PackedBedModel:
             n_wall: int | npt.ArrayLike = 10):
         """
         Parameters:
-            T_d: Discharge temperature [K].
+            T_initial: Discharge temperature [K].
             P: Initial pressure [Pa].
             L: Domain length [m].
             D: Internal tank diameter [m].
@@ -120,13 +120,13 @@ class PackedBedModel:
 
         # Fluid properties
         self.P_intf = np.full((1, n + 1), P)
-        self.T_f = np.full((1, n), T_d, dtype=float)
+        self.T_f = np.full((1, n), T_initial, dtype=float)
         self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self._interp(self.P_intf[0]))
         self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(
             self.i_f, self._interp(self.P_intf[0]))[1:]
 
         # Solid properties
-        self.T_s = np.full((1, n), T_d, dtype=float)
+        self.T_s = np.full((1, n), T_initial, dtype=float)
         self.rho_s = rho_s
         self.E_s, self.k_s = self.calculate_solid_props(self.T_s[0])
 
@@ -174,13 +174,13 @@ class PackedBedModel:
 
         # Calculate heat flux through lid and walls
         R_lid = t_wall / k_wall  # Convection/conduction resistance
-        Q_lid = (T_d - T_env) / np.sum(R_lid)  # Heat flux through the lid
-        T_lid_bound = np.array([T_d, *(T_d - np.add.accumulate(Q_lid * R_lid))])
+        Q_lid = (T_initial - T_env) / np.sum(R_lid)  # Heat flux through the lid
+        T_lid_bound = np.array([T_initial, *(T_initial - np.add.accumulate(Q_lid * R_lid))])
 
         self.r_layer_bound = D/2 + np.array([0, *np.add.accumulate(t_wall)])
         R_wall = np.log(self.r_layer_bound[1:] / self.r_layer_bound[:-1]) / (2 * np.pi * k_wall * L)
-        Q_wall = (T_d - T_env) / np.sum(R_wall)
-        T_wall_bound = [T_d, *(T_d - np.add.accumulate(Q_wall * R_wall))]
+        Q_wall = (T_initial - T_env) / np.sum(R_wall)
+        T_wall_bound = [T_initial, *(T_initial - np.add.accumulate(Q_wall * R_wall))]
 
         # Calculate coordinates and temperature profiles for walls and lids
         T_wall = []
@@ -306,9 +306,9 @@ class PackedBedModel:
 
         # Next iteration state arrays
         P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
-        P_intf[0] = P_inlet  # Set inlet pressure
+        P_intf[0 if charge else -1] = P_inlet  # Set inlet pressure
         m_dot = np.copy(self.m_dot)  # Mass flow rate at node interfaces
-        m_dot[0] = m_dot_inlet  # Set inlet mass flow rate
+        m_dot[0 if charge else -1] = m_dot_inlet  # Set inlet mass flow rate
         i_f = np.copy(self.i_f)
         T_f = np.copy(self.T_f[-1])
         rho_f = np.copy(self.rho_f)
@@ -339,29 +339,53 @@ class PackedBedModel:
             alpha1, alpha2 = self.calculate_solid_linearized_coeffs(T_s_prev)
             e_s_0 = self.calculate_solid_internal_energy(self.T_s[-1])
 
-            i_f, T_s = self.solve_fluid_solid_bed(
-                self.i_f, i_inlet, e_s_0, g,
-                P_intf, self.P_intf[-1], rho_f, self.rho_f, self.rho_s,
-                alpha1, alpha2, m_dot,
-                T_wall[:, 0], self.T_top_lid[-1, -1], self.T_bottom_lid[-1, 0],
-                k_eff, h_wall, h_v,
-                self.A_node_wall_intf, self.A_cs, self.V_node,
-                self.eps, self.dz, dt
-            )
+            if charge:
+                i_f, T_s = self.solve_fluid_solid_bed(
+                    self.i_f, i_inlet, e_s_0, g,
+                    P_intf, self.P_intf[-1], rho_f, self.rho_f, self.rho_s,
+                    alpha1, alpha2, m_dot,
+                    T_wall[:, 0], self.T_top_lid[-1, -1], self.T_bottom_lid[-1, 0],
+                    k_eff, h_wall, h_v,
+                    self.A_node_wall_intf, self.A_cs, self.V_node,
+                    self.eps, self.dz, dt
+                )
+            else:
+                i_f, T_s = self.solve_fluid_solid_bed(
+                    self.i_f[::-1], i_inlet, e_s_0[::-1], g[::-1],
+                    P_intf[::-1], self.P_intf[-1, ::-1], rho_f[::-1], self.rho_f[::-1], self.rho_s,
+                    alpha1[::-1], alpha2[::-1], m_dot[::-1],
+                    T_wall[::-1, 0], self.T_bottom_lid[-1, 0], self.T_top_lid[-1, -1],
+                    k_eff[::-1], h_wall[::-1], h_v[::-1],
+                    self.A_node_wall_intf, self.A_cs, self.V_node,
+                    self.eps, self.dz, dt
+                )
+                i_f = i_f[::-1]
+                T_s = T_s[::-1]
 
             # Update fluid and solid thermodynamic properties
             T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self._interp(P_intf))
             E_s, k_s = self.calculate_solid_props(T_s)
 
             # Update mass flow rate and pressure at interfaces
-            m_dot[1:] = m_dot[0] - np.add.accumulate(
-                self.eps * self.V_node * (rho_f - self.rho_f) / dt
-            )
+            if charge:
+                m_dot[1:] = m_dot[0] - np.add.accumulate(
+                    self.eps * self.V_node * (rho_f - self.rho_f) / dt
+                )
+            else:
+                m_dot[-2::-1] = m_dot[-1] - np.add.accumulate(
+                    self.eps * self.V_node * (rho_f[::-1] - self.rho_f[::-1]) / dt
+                )
+
             G = self._interp(m_dot) / (self.eps * self.A_cs)  # Effective mass flow rate per cross-section
 
-            P_intf[1:] = P_intf[0] - np.add.accumulate(
-                self.pressure_drop(self.dz, rho_f, mu_f, G, self.eps, self.d)
-            )
+            if charge:
+                P_intf[1:] = P_intf[0] - np.add.accumulate(
+                    self.pressure_drop(self.dz, rho_f, mu_f, G, self.eps, self.d)
+                )
+            else:
+                P_intf[-2::-1] = P_intf[-1] - np.add.accumulate(
+                    self.pressure_drop(self.dz, rho_f[::-1], mu_f[::-1], G[::-1], self.eps, self.d)
+                )
 
             # Update heat transfer coefficients
             k_eff, h_wall, h_v = self.calculate_heat_transfer_coeffs(
