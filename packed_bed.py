@@ -341,23 +341,27 @@ class PackedBedModel:
 
             if charge:
                 i_f, T_s = self.solve_fluid_solid_bed(
-                    self.i_f, i_inlet, e_s_0, g,
-                    P_intf, self.P_intf[-1], rho_f, self.rho_f, self.rho_s,
-                    alpha1, alpha2, m_dot,
+                    self.i_f, i_inlet, g,
+                    e_s_0, alpha1, alpha2,
+                    rho_f, self.rho_f, self.rho_s,
+                    P_intf, self.P_intf[-1],
+                    m_dot,
                     T_wall[:, 0], self.T_top_lid[-1, -1], self.T_bottom_lid[-1, 0],
                     k_eff, h_wall, h_v,
-                    self.A_node_wall_intf, self.A_cs, self.V_node,
-                    self.eps, self.dz, dt
+                    self.A_node_wall_intf, self.A_cs, self.V_node, self.eps, self.dz,
+                    dt
                 )
             else:
                 i_f, T_s = self.solve_fluid_solid_bed(
-                    self.i_f[::-1], i_inlet, e_s_0[::-1], g[::-1],
-                    P_intf[::-1], self.P_intf[-1, ::-1], rho_f[::-1], self.rho_f[::-1], self.rho_s,
-                    alpha1[::-1], alpha2[::-1], m_dot[::-1],
+                    self.i_f[::-1], i_inlet, g[::-1],
+                    e_s_0[::-1], alpha1[::-1], alpha2[::-1],
+                    rho_f[::-1], self.rho_f[::-1], self.rho_s,
+                    P_intf[::-1], self.P_intf[-1, ::-1],
+                    m_dot[::-1],
                     T_wall[::-1, 0], self.T_bottom_lid[-1, 0], self.T_top_lid[-1, -1],
                     k_eff[::-1], h_wall[::-1], h_v[::-1],
-                    self.A_node_wall_intf, self.A_cs, self.V_node,
-                    self.eps, self.dz, dt
+                    self.A_node_wall_intf, self.A_cs, self.V_node, self.eps, self.dz,
+                    dt
                 )
                 i_f = i_f[::-1]
                 T_s = T_s[::-1]
@@ -452,59 +456,48 @@ class PackedBedModel:
     @staticmethod
     @njit(parallel=True)
     def solve_fluid_solid_bed(
-            i_f_0,
-            i_inlet,
-            e_s_0,
-            g,
-            P_intf,
-            P_intf_0,
-            rho_f,
-            rho_0,
-            rho_s,
-            alpha1,
-            alpha2,
-            m_dot,
-            T_wall,
-            T_lid_inlet,
-            T_lid_outlet,
-            k_eff,
-            h_wall,
-            h_v,
-            A_wall,
-            A_cs,
-            V,
-            eps,
-            dz,
+            i_f_0, i_inlet, g,  # Fluid enthalpy
+            e_s_0, alpha1, alpha2,  # Solid internal energy
+            rho_f, rho_0, rho_s,  # Density
+            P_intf, P_intf_0,  # Pressure
+            m_dot,  # Mass flow
+            T_wall, T_lid_inlet, T_lid_outlet,  # Temperature BCs
+            k_eff, h_wall, h_v,  # Heat transfer terms
+            A_wall, A_cs, V, eps, dz,  # Geometry
             dt
     ):
         """
-        :material-lightning-bolt:{ .parallel } Parallelized
-
-        Solves for the fluid and solid temperatures for the next time step.
+        Solves for the fluid enthalpy and solid temperature for the next time step.
 
         Parameters:
-            i_f_0: Fluid enthalpies for the previous time step [J/kg].
+            i_f_0: Fluid enthalpy for the previous time step [J/kg].
+            i_inlet: Fluid enthalpy at the inlet [J/kg].
             g: Fluid temperature-enthalpy coupling factor [K⋅kg/J].
-            P_intf: Pressure estimate at the interfaces for the next time step [Pa].
-            P_intf_0: Pressure at the interfaces for the previous time step [Pa].
+            e_s_0: Solid internal energy for the previous time step [J/kg].
+            alpha1: First linearized parameter for solid internal energy.
+            alpha2: Second linearized parameter for solid internal energy.
             rho_f: Fluid density estimates for the next time step [kg/m^3^].
             rho_0: Fluid densities for the previous time step [kg/m^3^].
+            rho_s: Density of the solid [kg/m^3^].
+            P_intf: Pressure estimate at the interfaces for the next time step [Pa].
+            P_intf_0: Pressure at the interfaces for the previous time step [Pa].
             m_dot: Mass flow rate estimate at node interfaces [kg/s].
-
             T_wall: Wall interface temperature [K].
             T_lid_inlet: Temperature of the lid at the inlet [K].
             T_lid_outlet: Temperature of the lid at the outlet [K].
-
-            k_eff: TODO
+            k_eff: Effective thermal conductivity [W/m⋅K]
             h_wall: Wall heat transfer coefficient [W/m^2^⋅K].
             h_v: Volumetric heat transfer coefficient [W/m^3^⋅K].
-
             A_wall: Surface area of the node wall boundary [m^2^].
             A_cs: Cross-sectional area [m^2^].
             V: Node volume [m^3^].
             eps: Void fraction [-].
+            dz: Axial node spacing [m].
             dt: Time step [s].
 
+        Returns:
+            i_f: Fluid enthalpy for the next time step [J/kg].
+            T_s: Solid temperature for the next time step [K].
         """
         # Matrix setup
         n = i_f_0.size
