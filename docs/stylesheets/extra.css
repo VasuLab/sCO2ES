@@ -24,7 +24,3 @@ a.external:hover::after,
 a.autorefs-external:hover::after {
   background-color: var(--md-accent-fg-color);
 }
-
-.parallel {
-  color: #FFEC3D;
-}

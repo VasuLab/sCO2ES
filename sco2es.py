@@ -30,6 +30,7 @@ class PackedBed:
     - Constant wall thermal properties
     - Constant axial spacing
     - Constant diameter
+    - Constant temperature exterior wall boundary condition
 
     Attributes:
         n: Number of nodes in the axial direction.
@@ -68,6 +69,8 @@ class PackedBed:
     """Maximum number of iterations for the loop."""
 
     fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
+    """CoolProp object for accessing tabulated CO~2~ properties using bicubic interpolation for the
+    Helmholtz-based equation of state (HEOS)."""
 
     def __init__(
             self,
@@ -577,8 +580,6 @@ class PackedBed:
     @njit(parallel=True)
     def solve_lid_temperature(T_lid, T_f, T_env, h_wall, k, rho, cp, z, V, A, dt, *, reverse=False):
         """
-        :material-lightning-bolt:{ .parallel } Parallelized
-
         Solves for the lid temperature profile for the next time step. The boundary conditions are
         taken as:
 
@@ -645,6 +646,9 @@ class PackedBed:
     @staticmethod
     @njit(parallel=True)
     def _setup_wall_temperature_matrix(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
+        """
+        Sets up the diagonals of the sparse wall temperature matrix and the right hand side column vector.
+        """
         n, m = T_wall.shape
         b = np.zeros(m * n)
 
@@ -694,8 +698,6 @@ class PackedBed:
     @staticmethod
     def solve_wall_temperature(T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt):
         """
-        :material-lightning-bolt:{ .parallel } Parallelized
-
         Solves for the lid temperature profile for the next time step. The boundary conditions are
         taken as:
 
@@ -1245,4 +1247,3 @@ class PackedBed:
         ax.set_xlabel("Radial distance [m]")
 
         ax.set_facecolor("black")
-
