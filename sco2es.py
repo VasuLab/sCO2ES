@@ -221,9 +221,10 @@ class PackedBed:
 
     def time(self, s: float = 0, *, m: float = 0, h: float = 0):
         """
-        A function for retrieving the index of the
+        A function for retrieving the index of the simulation time step with the closest elapsed time
+        to the given time.
         """
-        return np.argwhere(self.t == s + 60 * (m + 60 * h))[0][0]
+        return np.argmin(np.abs(s + 60 * (m + 60 * h) - self.t))
 
     def advance(
             self,
