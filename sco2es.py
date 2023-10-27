@@ -16,33 +16,34 @@ class StopCriterionError(Exception):
     """Exception raised when the charge/discharge stopping criterion is not met within the allowable time."""
 
 
-class PackedBedModel:
+class PackedBed:
     r"""
     An implementation of the packed bed thermal energy storage model described by Battisti et al.[^1].
-
-    !!! Warning "Assumptions"
-
-        - Constant solid phase density
-        - Constant wall thermal properties
-        - Constant axial spacing
-
-    Attributes:
-        n: Number of nodes in the axial direction.
-        m: Number of wall or lid nodes in the radial or axial directions, respectively.
-        nodes: Total number of nodes (`2(n+m) + nm`).
-        A_cs: Cross-sectional area of the packed bed [m^2^].
-        V_node: Volume of a packed bed node [m].
-        r_wall (m): Radial positions of wall nodes from centerline [m].
-        r_bound (m + 1): Radial positions of wall cell boundaries from centerline [m].
-        z_top_lid (m): Axial positions of top lid nodes from charging inlet in direction of flow [m].
-        z_bottom_lid (m): Axial positions of bottom lid nodes from charging inlet in direction of flow [m].
-        V_wall (m): Volume of the wall cells [m^3^].
-        A_wall_z (m): Surface area of the wall cell boundary in the axial direction [m^2^].
-        A_wall_r (m+1): Surface area of the wall cell boundary in the radial direction [m^2^].
 
     [^1]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
     systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
     183, p. 116032, 2021.
+
+    Assumptions:
+
+    - Constant solid phase density
+    - Constant wall thermal properties
+    - Constant axial spacing
+    - Constant diameter
+
+    Attributes:
+        n: Number of nodes in the axial direction.
+        m: Number of wall or lid nodes in the radial or axial directions, respectively.
+        nodes: Total number of nodes.
+        A_cs: Cross-sectional area of the packed bed [m^2^].
+        V_node: Volume of a packed bed node [m].
+        r_wall: Radial positions of wall nodes from centerline [m].
+        r_bound: Radial positions of wall cell boundaries from centerline [m].
+        z_top_lid: Axial positions of top lid nodes from charging inlet in direction of flow [m].
+        z_bottom_lid: Axial positions of bottom lid nodes from charging inlet in direction of flow [m].
+        V_wall: Volume of the wall cells [m^3^].
+        A_wall_z: Surface area of the wall cell boundary in the axial direction [m^2^].
+        A_wall_r: Surface area of the wall cell boundary in the radial direction [m^2^].
     """
 
     atol_T_f: float = 0.05
@@ -722,7 +723,7 @@ class PackedBedModel:
         """
         n, m = T_wall.shape
 
-        diags, b = PackedBedModel._setup_wall_temperature_matrix(
+        diags, b = PackedBed._setup_wall_temperature_matrix(
             T_wall, T_f, T_env, h_wall, k, rho, cp, r, dr, dz, V, A_r, A_z, dt)
         A_sparse = scipy.sparse.diags(diags, offsets=[-n, -1, 0, 1, n], format="csr")
         return scipy.sparse.linalg.spsolve(A_sparse, b).reshape((m, n)).T

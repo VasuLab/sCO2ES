@@ -1,6 +1,6 @@
-site_name: sCO2 Energy Storage
-repo_url: https://github.com/VasuLab/sCO2-energy-storage
-repo_name: VasuLab/sCO2-energy-storage
+site_name: Supercritical CO₂ Energy Storage (sCO₂-ES)
+repo_url: https://github.com/VasuLab/sCO2-ES
+repo_name: VasuLab/sCO2-ES
 
 theme:
   name: material
@@ -39,7 +39,7 @@ plugins:
           show_signature: True
 
 watch:
-  - packed_bed.py
+  - sco2es.py
 
 markdown_extensions:
   - admonition

@@ -1,5 +1,5 @@
-import packed_bed
-from packed_bed import PackedBedModel
+import sco2es
+
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -12,7 +12,7 @@ k_g = 2.9  # W/m K
 R_st = D/2 + t_ins + t_st
 t_g = R_st * (np.exp(k_g / (h_air * R_st)) - 1)
 
-pbed = PackedBedModel(
+pbed = sco2es.PackedBed(
     T_initial=60 + 273,
     P=27.5e6,
     L=9.1,
@@ -77,5 +77,5 @@ try:
 
     plt.show()
 
-except packed_bed.StopCriterionError:
+except sco2es.StopCriterionError:
     print(f"ERROR: Stopped at t = {pbed.t[-1]} s.")
