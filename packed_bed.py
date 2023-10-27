@@ -807,9 +807,17 @@ class PackedBedModel:
     @staticmethod
     def calculate_solid_internal_energy(T_s):
         """
+        Calculates the solid internal energy [J/kg] of alumina [^1]^,^[^2].
+
+        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+        1960.
+        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+        Engineering, vol. 183, p. 116032, 2021.
+
         Parameters:
             T_s: Estimate for solid temperature [K].
-
         """
         psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
         T_ref = 25 + 273
@@ -818,6 +826,15 @@ class PackedBedModel:
     @staticmethod
     def calculate_solid_linearized_coeffs(T_s):
         """
+        Calculates the parameters for the linearized solid internal energy of alumina [^1]^,^[^2].
+
+        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+        1960.
+        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+        Engineering, vol. 183, p. 116032, 2021.
+
         Parameters:
             T_s: Estimate for solid temperature [K].
 
