@@ -1,3 +1,5 @@
+"""© 2023 University of Central Florida. All rights reserved."""
+
 from typing import Callable
 
 import numpy as np
