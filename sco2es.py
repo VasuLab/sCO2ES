@@ -223,7 +223,7 @@ class PackedBed:
         """
         return (x[:-1] + x[1:]) / 2
 
-    def time(self, s: float = 0, *, m: float = 0, h: float = 0):
+    def time_index(self, s: float = 0, *, m: float = 0, h: float = 0):
         """
         A function for retrieving the index of the simulation time step with the closest elapsed time
         to the given time.
