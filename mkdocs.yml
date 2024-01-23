@@ -10,21 +10,31 @@ theme:
     - search.highlight
   palette:
 
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: orange
+      accent: amber
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: teal
+      primary: orange
+      accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-      
+
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: teal
+      primary: orange
+      accent: amber
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: Switch to system preference
 
 plugins:
 - search
@@ -37,6 +47,7 @@ plugins:
           show_root_toc_entry: False
           show_source: False
           show_signature: True
+          show_symbol_type_heading: true
 
 watch:
   - sco2es.py
