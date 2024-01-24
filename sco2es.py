@@ -143,6 +143,17 @@ class PackedBed:
         A_wall_r: Surface area of the wall cell boundary in the radial direction [m^2^].
     """
 
+    fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
+    """CoolProp object for accessing tabulated CO~2~ properties using bicubic interpolation for the
+    Helmholtz-based equation of state (HEOS)."""
+
+    solid: SolidPropsInterface = Alumina
+    """[`SolidPropsInterface`][sco2es.SolidPropsInterface] for calculating temperature-dependent 
+    properties of the solid phase."""
+
+    max_iter: int = 100
+    """Maximum number of iterations for the loop."""
+
     atol_T_f: float = 0.05
     """Absolute tolerance for fluid temperature [ºC]."""
     atol_P: float = 0.1
@@ -160,17 +171,6 @@ class PackedBed:
     """Relative tolerance for mass flow rate."""
     rtol_h: float = 0.1e-2
     """Relative tolerance for volumetric and wall heat transfer coefficients."""
-
-    max_iter: int = 100
-    """Maximum number of iterations for the loop."""
-
-    fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
-    """CoolProp object for accessing tabulated CO~2~ properties using bicubic interpolation for the
-    Helmholtz-based equation of state (HEOS)."""
-
-    solid: SolidPropsInterface = Alumina
-    """[`SolidPropsInterface`][sco2es.SolidPropsInterface] for calculating temperature-dependent 
-    properties of the solid phase."""
 
     def __init__(
             self,
@@ -863,11 +863,9 @@ class PackedBed:
 
         return k_eff, h_wall, h_v
 
-    @staticmethod
-    def calculate_fluid_enthalpy(T_f, P):
+    def calculate_fluid_enthalpy(self, T_f, P):
         """
-        Returns the mass-specific enthalpy of CO~2~ at the given conditions using
-        [`CoolProp`](http://www.coolprop.org/).
+        Returns the [`fluid`][sco2es.PackedBed.fluid] mass-specific enthalpy at each node.
 
         Parameters:
             T_f: Temperature [K].
@@ -877,13 +875,14 @@ class PackedBed:
         P = np.asarray(P)
         i_f = np.empty_like(T_f)
         for i in range(T_f.size):
-            i_f[i] = CP.CoolProp.PropsSI("H", "T", T_f[i], "P", P[i], "CO2")
+            self.fluid.update(CP.PT_INPUTS, P[i], T_f[i])
+            i_f[i] = self.fluid.hmass()
         return i_f
 
     def calculate_fluid_props(self, i_f, P):
         """
-        Returns the thermal conductivity, density, viscosity, and specific heat capacity of CO~2~ at each node
-        using [`CoolProp`](http://www.coolprop.org/).
+        Returns the [`fluid`][sco2es.PackedBed.fluid] temperature, thermal conductivity, density, viscosity, and
+        specific heat capacity at each node.
 
         Parameters:
             i_f: Mass-specific enthalpy of the fluid [J/kg].
