@@ -1,6 +1,8 @@
 """© 2023 University of Central Florida. All rights reserved."""
 
+from abc import abstractmethod
 from typing import Callable
+from typing_extensions import Protocol
 
 import numpy as np
 import numpy.typing as npt
@@ -15,6 +17,99 @@ class ModelAssumptionError(Exception):
 
 class StopCriterionError(Exception):
     """Exception raised when the charge/discharge stopping criterion is not met within the allowable time."""
+
+
+class SolidPropsInterface(Protocol):
+    """Protocol class defining the required interface for updating temperature-dependent solid properties
+    for the [`PackedBed`][sco2es.PackedBed] model.
+
+    Parameters:
+        T: Temperature [K].
+    """
+
+    @staticmethod
+    @abstractmethod
+    def internal_energy(T):
+        """Internal energy, $e$ [J/kg]."""
+
+    @staticmethod
+    @abstractmethod
+    def internal_energy_linear_coeffs(T):
+        r"""
+        Coefficients, $\alpha_1$ [J/kg⋅K] and $\alpha_2$ [J/kg], for the linearized expression
+        of internal energy:
+
+        $$
+        e(T) = \alpha_1 T + \alpha_2
+        $$
+        """
+
+    @staticmethod
+    @abstractmethod
+    def thermal_conductivity(T):
+        """Thermal conductivity, $k$ [W/m⋅K]."""
+
+    @staticmethod
+    @abstractmethod
+    def emissivity(T):
+        r"""Emissivity, $E$ [-]."""
+
+
+class Alumina(SolidPropsInterface):
+
+    @staticmethod
+    def internal_energy(T):
+        """
+        Internal energy of alumina [^1]^,^[^2].
+
+        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+        1960.
+        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+        Engineering, vol. 183, p. 116032, 2021.
+        """
+        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
+        T_ref = 25 + 273
+        return psi1 * (psi2 * (T - T_ref) + psi3 * (T**2 - T_ref**2) / 2 - psi4 * (1 / T - 1 / T_ref))
+
+    @staticmethod
+    def internal_energy_linear_coeffs(T):
+        """
+        Linearized internal energy coefficients of alumina [^1]^,^[^2].
+
+        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+        1960.
+        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+        Engineering, vol. 183, p. 116032, 2021.
+        """
+        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
+        T_ref = 25 + 273
+        alpha1 = psi1 * (psi2 + psi3 * T + psi4 / T ** 2)
+        alpha2 = -psi1 * (psi2 * T_ref + psi3 * (T ** 2 + T_ref ** 2) / 2 + psi4 * (2 / T - 1 / T_ref))
+        return alpha1, alpha2
+
+    @staticmethod
+    def thermal_conductivity(T):
+        """
+        Thermal conductivity of alumina[^1].
+
+        [^1]: "AETG/UC San Diego," [Online]. Available: www.ferp.ucsd.edu/LIB/PROPS/PANOS/al2o3.html
+        """
+        return 85.686 - 0.22972 * T + 2.607e-4 * T**2 - 1.3607e-7 * T**3 + 2.7092e-11 * T**4
+
+    @staticmethod
+    def emissivity(T):
+        """
+        Emissivity[^1] of alumina.
+
+        [^1]: M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
+        El Segundo/CA, 1975.
+        """
+        T = (T - 953.8151) / 432.1046
+        return 0.5201 - 0.1794 * T + 0.01343 * T**2 + 0.01861 * T**3
 
 
 class PackedBed:
@@ -72,6 +167,10 @@ class PackedBed:
     fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
     """CoolProp object for accessing tabulated CO~2~ properties using bicubic interpolation for the
     Helmholtz-based equation of state (HEOS)."""
+
+    solid: SolidPropsInterface = Alumina
+    """[`SolidPropsInterface`][sco2es.SolidPropsInterface] for calculating temperature-dependent 
+    properties of the solid phase."""
 
     def __init__(
             self,
@@ -133,7 +232,8 @@ class PackedBed:
         # Solid properties
         self.T_s = np.full((1, n), T_initial, dtype=float)
         self.rho_s = rho_s
-        self.E_s, self.k_s = self.calculate_solid_props(self.T_s[0])
+        self.E_s = self.solid.emissivity(self.T_s[0])
+        self.k_s = self.solid.thermal_conductivity(self.T_s[0])
 
         # Field variables
         self.m_dot = np.zeros(n + 1)  # Initially stationary
@@ -342,8 +442,8 @@ class PackedBed:
 
             # Solve for fluid enthalpy and solid temperature
             g = T_f_prev / i_f_prev  # Calculate temperature-enthalpy coupling factor
-            alpha1, alpha2 = self.calculate_solid_linearized_coeffs(T_s_prev)
-            e_s_0 = self.calculate_solid_internal_energy(self.T_s[-1])
+            alpha1, alpha2 = self.solid.internal_energy_linear_coeffs(T_s_prev)
+            e_s_0 = self.solid.internal_energy(self.T_s[-1])
 
             if charge:
                 i_f, T_s = self.solve_fluid_solid_bed(
@@ -374,7 +474,8 @@ class PackedBed:
 
             # Update fluid and solid thermodynamic properties
             T_f, k_f, rho_f, mu_f, cp_f = self.calculate_fluid_props(i_f, self._interp(P_intf))
-            E_s, k_s = self.calculate_solid_props(T_s)
+            E_s = self.solid.emissivity(T_s)
+            k_s = self.solid.thermal_conductivity(T_s)
 
             # Update mass flow rate and pressure at interfaces
             if charge:
@@ -808,72 +909,6 @@ class PackedBed:
             mu_f[i] = self.fluid.viscosity()
             cp_f[i] = self.fluid.cpmass()
         return T_f, k_f, rho_f, mu_f, cp_f
-
-    @staticmethod
-    def calculate_solid_internal_energy(T_s):
-        """
-        Calculates the solid internal energy [J/kg] of alumina [^1]^,^[^2].
-
-        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
-        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
-        1960.
-        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
-        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
-        Engineering, vol. 183, p. 116032, 2021.
-
-        Parameters:
-            T_s: Estimate for solid temperature [K].
-        """
-        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
-        T_ref = 25 + 273
-        return psi1 * (psi2 * (T_s - T_ref) + psi3 * (T_s**2 - T_ref**2) / 2 - psi4 * (1 / T_s - 1 / T_ref))
-
-    @staticmethod
-    def calculate_solid_linearized_coeffs(T_s):
-        """
-        Calculates the parameters for the linearized solid internal energy of alumina [^1]^,^[^2].
-
-        [^1]: K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
-        heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
-        1960.
-        [^2]: F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
-        storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
-        Engineering, vol. 183, p. 116032, 2021.
-
-        Parameters:
-            T_s: Estimate for solid temperature [K].
-
-        Returns:
-            alpha1: First linearized parameter.
-            alpha2: Second linearized parameter.
-        """
-        psi1, psi2, psi3, psi4 = 1.712e3, 0.658, 6.750e-5, -2.010e4
-        T_ref = 25 + 273
-        alpha1 = psi1 * (psi2 + psi3 * T_s + psi4 / T_s**2)
-        alpha2 = -psi1 * (psi2 * T_ref + psi3 * (T_s**2 + T_ref**2) / 2 + psi4 * (2 / T_s - 1 / T_ref))
-        return alpha1, alpha2
-
-    @staticmethod
-    @njit(parallel=True)
-    def calculate_solid_props(T_s):
-        """
-        Returns the temperature-dependent emissivity[^1] and thermal conductivity[^2] of alumina for each node.
-
-        [^1]: M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
-        El Segundo/CA, 1975.
-        [^2]: "AETG/UC San Diego," [Online]. Available: www.ferp.ucsd.edu/LIB/PROPS/PANOS/al2o3.html
-
-        Parameters:
-            T_s: Temperature of the solid [K].
-
-        Returns:
-            E_s: Emissivity of the solid.
-            k_s: Thermal conductivity of the solid [W/m⋅K].
-        """
-        T_star = (T_s - 953.8151) / 432.1046
-        E_s = 0.5201 - 0.1794 * T_star + 0.01343 * T_star**2 + 0.01861 * T_star**3
-        k_s = 85.686 - 0.22972 * T_s + 2.607e-4 * T_s**2 - 1.3607e-7 * T_s**3 + 2.7092e-11 * T_s**4
-        return E_s, k_s
 
     @staticmethod
     def biot_number(h_v, d, eps, k_s):
