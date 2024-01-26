@@ -56,6 +56,7 @@ class SolidPropsInterface(Protocol):
 
 
 class Alumina(SolidPropsInterface):
+    """An implementation of experimental correlations for alumina's relevant properties."""
 
     @staticmethod
     def internal_energy(T):
@@ -144,12 +145,13 @@ class PackedBed:
     """
 
     fluid = CP.AbstractState("BICUBIC&HEOS", "CO2")
-    """CoolProp object for accessing tabulated CO~2~ properties using bicubic interpolation for the
-    Helmholtz-based equation of state (HEOS)."""
+    """[`CoolProp.AbstractState`](http://www.coolprop.org/apidoc/CoolProp.AbstractState.html) object for accessing 
+    fluid properties. By default, CO~2~ properties are tabulated for the Helmholtz-based equation of state (HEOS)
+    and bicubic interpolation is used for performance."""
 
     solid: SolidPropsInterface = Alumina
-    """[`SolidPropsInterface`][sco2es.SolidPropsInterface] for calculating temperature-dependent 
-    properties of the solid phase."""
+    """[`SolidPropsInterface`][sco2es.SolidPropsInterface] for calculating temperature-dependent properties of the 
+    solid phase."""
 
     max_iter: int = 100
     """Maximum number of iterations for the loop."""
