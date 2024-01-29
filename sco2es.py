@@ -373,10 +373,6 @@ class PackedBed:
             if callback is not None:
                 callback()
 
-            Bi = self.biot_number(self.h_v, self.d, self.eps, self.k_s)
-            if not np.all(Bi <= 0.1):  # Check lumped capacitance assumption
-                raise ModelAssumptionError("Biot number exceeded acceptable threshold (Bi > 0.1).")
-
             t = self.t[-1] - t_start  # Current charge/discharge time
 
             if charge:  # Check charge stopping criterion
@@ -409,6 +405,10 @@ class PackedBed:
         Returns:
             Number of iterations required for convergence.
         """
+
+        Bi = self.biot_number(self.h_v, self.d, self.eps, self.k_s)
+        if not np.all(Bi <= 0.1):  # Check lumped capacitance assumption
+            raise ModelAssumptionError("Biot number exceeded acceptable threshold (Bi > 0.1).")
 
         i_inlet = self.calculate_fluid_enthalpy([T_inlet], [P_inlet])[0]
 
