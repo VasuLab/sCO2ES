@@ -341,8 +341,7 @@ class PackedBed:
             *,
             T_outlet_stop: float = None,
             dt: float = 10,
-            charge: bool = True,
-            callback: Callable[[], None] = None
+            discharge: bool = False,
     ):
         """
         Advances the simulation until the charge/discharge stopping criterion is satisfied.
@@ -354,8 +353,7 @@ class PackedBed:
             t_max: Maximum time advancement [s].
             T_outlet_stop: Outlet fluid temperature [K] condition for stopping.
             dt: Time step [s].
-            charge: Flag indicating whether the system is charging (`True`) or discharging (`False`).
-            callback: Callback function for each time step.
+            discharge: Flag indicating that the system is discharging.
 
         Returns:
             Time at which the charging/discharging stop criterion was satisfied.
@@ -368,28 +366,28 @@ class PackedBed:
 
         t_start = self.t[-1]
         while (t_elapsed := self.t[-1] - t_start) < t_max:
-            self.step(T_inlet, P_inlet, m_dot_inlet, dt, charge=charge)
+            self.step(T_inlet, P_inlet, m_dot_inlet, dt, discharge=discharge)
 
             if T_outlet_stop is not None:
                 # Charge stopping criterion
-                if charge:
+                if not discharge:
                     if self.T_f[-1, -1] >= T_outlet_stop:
                         return t_elapsed
 
                 # Discharge stopping criterion
-                else:  # Check discharge stopping criterion
+                else:
                     if self.T_f[-1, 0] <= T_outlet_stop:
                         return t_elapsed
         else:
             if T_outlet_stop is not None:
                 raise StopCriterionError(
-                    f"{'Charging' if charge else 'Discharging'} stop criterion not satisfied within "
+                    f"{'Charging' if not discharge else 'Discharging'} stop criterion not satisfied within "
                     f"the maximum allowed time."
                 )
 
             return t_elapsed
 
-    def step(self, T_inlet: float, P_inlet: float, m_dot_inlet: float, dt, *, charge: bool = True):
+    def step(self, T_inlet: float, P_inlet: float, m_dot_inlet: float, dt, *, discharge: bool = False):
         """
         Calculates the state of the packed bed at the next time step using an iterative algorithm.
 
@@ -398,7 +396,7 @@ class PackedBed:
             P_inlet: Pressure at the inlet [Pa].
             m_dot_inlet: Mass flow rate of the inlet stream [kg/s].
             dt: Time step [s].
-            charge: Flag indicating whether the system is charging (`True`) or discharging (`False`).
+            discharge: Flag indicating that the system is discharging.
 
         Returns:
             Number of iterations required for convergence.
@@ -412,9 +410,9 @@ class PackedBed:
 
         # Next iteration state arrays
         P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
-        P_intf[0 if charge else -1] = P_inlet  # Set inlet pressure
+        P_intf[0 if not discharge else -1] = P_inlet  # Set inlet pressure
         m_dot = np.copy(self.m_dot)  # Mass flow rate at node interfaces
-        m_dot[0 if charge else -1] = m_dot_inlet  # Set inlet mass flow rate
+        m_dot[0 if not discharge else -1] = m_dot_inlet  # Set inlet mass flow rate
         i_f = np.copy(self.i_f)
         T_f = np.copy(self.T_f[-1])
         rho_f = np.copy(self.rho_f)
@@ -445,7 +443,7 @@ class PackedBed:
             alpha1, alpha2 = self.solid.internal_energy_linear_coeffs(T_s_prev)
             e_s_0 = self.solid.internal_energy(self.T_s[-1])
 
-            if charge:
+            if not discharge:
                 i_f, T_s = self.solve_fluid_solid_bed(
                     self.i_f, i_inlet, g,
                     e_s_0, alpha1, alpha2,
@@ -478,7 +476,7 @@ class PackedBed:
             k_s = self.solid.thermal_conductivity(T_s)
 
             # Update mass flow rate and pressure at interfaces
-            if charge:
+            if not discharge:
                 m_dot[1:] = m_dot[0] - np.add.accumulate(
                     self.eps * self.V_node * (rho_f - self.rho_f) / dt
                 )
@@ -489,7 +487,7 @@ class PackedBed:
 
             G = self._interp(m_dot) / (self.eps * self.A_cs)  # Effective mass flow rate per cross-section
 
-            if charge:
+            if not discharge:
                 P_intf[1:] = P_intf[0] - np.add.accumulate(
                     self.pressure_drop(self.dz, rho_f, mu_f, G, self.eps, self.d)
                 )
