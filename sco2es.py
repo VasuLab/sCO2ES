@@ -335,12 +335,12 @@ class PackedBed:
     def advance(
             self,
             T_inlet: float,
-            T_outlet_stop: float,
             P_inlet: float,
             m_dot_inlet: float,
-            *,
-            dt: float = 10,
             t_max: float = 12*60*60,
+            *,
+            T_outlet_stop: float = None,
+            dt: float = 10,
             charge: bool = True,
             callback: Callable[[], None] = None
     ):
@@ -349,11 +349,11 @@ class PackedBed:
 
         Parameters:
             T_inlet: Inlet fluid temperature [K].
-            T_outlet_stop: Outlet fluid temperature [K] condition for charge/discharge stopping.
             P_inlet: Pressure at the inlet [Pa].
             m_dot_inlet: Mass flow rate of the inlet stream [kg/s].
+            t_max: Maximum time advancement [s].
+            T_outlet_stop: Outlet fluid temperature [K] condition for stopping.
             dt: Time step [s].
-            t_max: Maximum allowed charging/discharging time [s].
             charge: Flag indicating whether the system is charging (`True`) or discharging (`False`).
             callback: Callback function for each time step.
 
@@ -367,29 +367,27 @@ class PackedBed:
         """
 
         t_start = self.t[-1]
-
-        while True:
+        while (t_elapsed := self.t[-1] - t_start) < t_max:
             self.step(T_inlet, P_inlet, m_dot_inlet, dt, charge=charge)
-            if callback is not None:
-                callback()
 
-            t = self.t[-1] - t_start  # Current charge/discharge time
+            if T_outlet_stop is not None:
+                # Charge stopping criterion
+                if charge:
+                    if self.T_f[-1, -1] >= T_outlet_stop:
+                        return t_elapsed
 
-            if charge:  # Check charge stopping criterion
-                T_outlet = self.T_f[-1, -1]
-                if T_outlet >= T_outlet_stop:
-                    return t
-
-            else:  # Check discharge stopping criterion
-                T_outlet = self.T_f[-1, 0]
-                if T_outlet <= T_outlet_stop:
-                    return t
-
-            if t >= t_max:  # Check charge/discharge time limit
+                # Discharge stopping criterion
+                else:  # Check discharge stopping criterion
+                    if self.T_f[-1, 0] <= T_outlet_stop:
+                        return t_elapsed
+        else:
+            if T_outlet_stop is not None:
                 raise StopCriterionError(
                     f"{'Charging' if charge else 'Discharging'} stop criterion not satisfied within "
-                    f"the maximum allowed {'charging' if charge else 'discharging'} time."
+                    f"the maximum allowed time."
                 )
+
+            return t_elapsed
 
     def step(self, T_inlet: float, P_inlet: float, m_dot_inlet: float, dt, *, charge: bool = True):
         """
