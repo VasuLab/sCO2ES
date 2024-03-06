@@ -214,6 +214,7 @@ class PackedBed:
         self.L = L
         self.dz = L / n
         self.t = np.array([0])
+        self.charging = np.array([], dtype=bool)
         self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
 
         # Packed bed parameters
@@ -541,6 +542,7 @@ class PackedBed:
 
             if converged:
                 self.t = np.append(self.t, self.t[-1] + dt)
+                self.charging = np.append(self.charging, not discharge)
                 self.P_intf = np.append(self.P_intf, [P_intf], axis=0)
                 self.T_f = np.append(self.T_f, [T_f], axis=0)
                 self.T_s = np.append(self.T_s, [T_s], axis=0)
