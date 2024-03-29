@@ -229,7 +229,8 @@ class PackedBed:
         self.P_intf = np.full((1, n + 1), P)
         self.T_f = np.full((1, n), T_initial, dtype=float)
         self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self._interp(self.P_intf[0]))
-        self.k_f, self.rho_f, self.mu_f, self.cp_f = self.calculate_fluid_props(
+        self.cp_f = np.zeros_like(self.T_f)
+        self.k_f, self.rho_f, self.mu_f, self.cp_f[0] = self.calculate_fluid_props(
             self.i_f, self._interp(self.P_intf[0]))[1:]
 
         # Solid properties
@@ -239,9 +240,9 @@ class PackedBed:
         self.k_s = self.solid.thermal_conductivity(self.T_s[0])
 
         # Field variables
-        self.m_dot = np.zeros(n + 1)  # Initially stationary
+        self.m_dot = np.zeros((1, n + 1))  # Initially stationary
         self.k_eff, self.h_wall, self.h_v = self.calculate_heat_transfer_coeffs(
-            self._interp(self.m_dot), self.T_f[0], self.k_f, self.cp_f, self.mu_f, self.k_s, self.E_s)
+            self._interp(self.m_dot[0]), self.T_f[0], self.k_f, self.cp_f[0], self.mu_f, self.k_s, self.E_s)
 
         # Wall/lid parameters
         self.T_env = T_env
@@ -412,7 +413,7 @@ class PackedBed:
         # Next iteration state arrays
         P_intf = np.copy(self.P_intf[-1])  # Pressure at node interfaces
         P_intf[0 if not discharge else -1] = P_inlet  # Set inlet pressure
-        m_dot = np.copy(self.m_dot)  # Mass flow rate at node interfaces
+        m_dot = np.copy(self.m_dot[-1])  # Mass flow rate at node interfaces
         m_dot[0 if not discharge else -1] = m_dot_inlet  # Set inlet mass flow rate
         i_f = np.copy(self.i_f)
         T_f = np.copy(self.T_f[-1])
@@ -549,9 +550,10 @@ class PackedBed:
                 self.T_wall = np.append(self.T_wall, [T_wall], axis=0)
                 self.T_top_lid = np.append(self.T_top_lid, [T_top_lid], axis=0)
                 self.T_bottom_lid = np.append(self.T_bottom_lid, [T_bottom_lid], axis=0)
+                self.cp_f = np.append(self.cp_f, [cp_f], axis=0)
+                self.m_dot = np.append(self.m_dot, [m_dot], axis=0)
                 self.i_f = i_f
                 self.rho_f = rho_f
-                self.m_dot = m_dot
                 self.h_v = h_v
                 self.h_wall = h_wall
                 self.k_eff = k_eff
