@@ -1,6 +1,7 @@
-site_name: Supercritical CO₂ Energy Storage (sCO₂-ES)
-repo_url: https://github.com/VasuLab/sCO2-ES
-repo_name: VasuLab/sCO2-ES
+site_name: Supercritical CO₂ Energy Storage (sCO₂ES)
+repo_url: https://github.com/VasuLab/sCO2ES
+repo_name: VasuLab/sCO2ES
+copyright: "&copy; 2023 - 2024 University of Central Florida. All rights reserved."
 
 theme:
   name: material
