@@ -1,4 +1,7 @@
-"""© 2023 University of Central Florida. All rights reserved."""
+"""© 2023-2024 University of Central Florida. All rights reserved."""
+
+__version__ = "0.0.1"
+
 
 from abc import abstractmethod
 from typing import Callable

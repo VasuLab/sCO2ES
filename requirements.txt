@@ -1,7 +1,0 @@
-CoolProp
-numpy
-numba
-matplotlib
-mkdocs
-mkdocs-material >= 9.5.0
-mkdocstrings-python >= 1.8.0

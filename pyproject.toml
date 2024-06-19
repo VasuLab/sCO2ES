@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "sco2es"
+version = "0.0.1"
+description = "A supercritical CO2 packed bed thermal energy storage simulation tool."
+authors = ["Cory Kinney <cory.kinney@ucf.edu>"]
+readme = "README.md"
+packages = [
+    { include = "sco2es.py"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+CoolProp = "^6.6.0"
+numpy = "^1.26.0"
+numba = "^0.60.0"
+scipy = "^1.13.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "1.6.0"
+mkdocs-material = "9.5.0"
+mkdocstrings-python = "1.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
