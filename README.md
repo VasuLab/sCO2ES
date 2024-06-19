@@ -1,11 +1,11 @@
-# Supercritical Carbon Dioxide Energy Storage (sCO₂-ES)
+# Supercritical Carbon Dioxide Energy Storage (sCO₂ES)
 
-This code is intended for modeling of energy storage for supercritical carbon dioxide (sCO₂) 
+`sco2es` is intended for modeling of energy storage for supercritical carbon dioxide (sCO₂) 
 packed bed thermal energy storage systems. This work is based on the model detailed by Battisti et al.[^1].
 
 ## Performance
 
-This code uses Numba for optimization of functions and utilizes NumPy's linear algebra routines
+`sco2es` uses Numba for optimization of functions and utilizes NumPy's linear algebra routines
 and SciPy's sparse linear algebra routines. For optimal performance, a version of SciPy built against a well
 optimized LAPACK/BLAS library is required. Therefore, it is recommended to run this code using the 
 Anaconda distribution of SciPy, which is built against Intel’s MKL[^2].
