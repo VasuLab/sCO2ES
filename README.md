@@ -3,6 +3,12 @@
 `sco2es` is intended for modeling of energy storage for supercritical carbon dioxide (sCO₂) 
 packed bed thermal energy storage systems. This work is based on the model detailed by Battisti et al.[^1].
 
+> [!IMPORTANT]
+> This software is licensed under the [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license which 
+> restricts commercial use. The software can be used for academic purposes, but if you are interested in using this
+> software for commercial purposes, please contact the University of Central Florida's 
+> [Technology Transfer Office](https://tt.research.ucf.edu/).
+
 ## Performance
 
 `sco2es` uses Numba for optimization of functions and utilizes NumPy's linear algebra routines
