@@ -1,0 +1,3877 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.0">
+    
+    
+      
+        <title>Supercritical CO₂ Energy Storage (sCO₂ES)</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.45e1311d.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Supercritical CO₂ Energy Storage (sCO₂ES)" class="md-header__button md-logo" aria-label="Supercritical CO₂ Energy Storage (sCO₂ES)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Supercritical CO₂ Energy Storage (sCO₂ES)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="amber"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VasuLab/sCO2ES" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VasuLab/sCO2ES
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Supercritical CO₂ Energy Storage (sCO₂ES)" class="md-nav__button md-logo" aria-label="Supercritical CO₂ Energy Storage (sCO₂ES)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Supercritical CO₂ Energy Storage (sCO₂ES)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VasuLab/sCO2ES" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VasuLab/sCO2ES
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.ModelAssumptionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelAssumptionError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.StopCriterionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      StopCriterionError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      SolidPropsInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SolidPropsInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.internal_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.internal_energy_linear_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy_linear_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.emissivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      emissivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.Alumina" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alumina
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alumina">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.internal_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.internal_energy_linear_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy_linear_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.emissivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      emissivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.PackedBed" class="md-nav__link">
+    <span class="md-ellipsis">
+      PackedBed
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PackedBed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.fluid" class="md-nav__link">
+    <span class="md-ellipsis">
+      fluid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solid" class="md-nav__link">
+    <span class="md-ellipsis">
+      solid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.max_iter" class="md-nav__link">
+    <span class="md-ellipsis">
+      max_iter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_T_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_T_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_P" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_P
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_T_s" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_T_s
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_T_wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_T_wall
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_i_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_i_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_rho_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_rho_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_m_dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_m_dot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_h" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_h
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.time_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      time_index
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.advance" class="md-nav__link">
+    <span class="md-ellipsis">
+      advance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.step" class="md-nav__link">
+    <span class="md-ellipsis">
+      step
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_fluid_solid_bed" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_fluid_solid_bed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_lid_temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_lid_temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_wall_temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_wall_temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_heat_transfer_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_heat_transfer_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_fluid_enthalpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_fluid_enthalpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_fluid_props" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_fluid_props
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.biot_number" class="md-nav__link">
+    <span class="md-ellipsis">
+      biot_number
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.effective_film_thickness_ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      effective_film_thickness_ratio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.void_radiative_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      void_radiative_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.surface_radiative_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      surface_radiative_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.effective_thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      effective_thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.volumetric_convective_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      volumetric_convective_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.conv_wall_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      conv_wall_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      cond_rad_wall_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.pressure_drop" class="md-nav__link">
+    <span class="md-ellipsis">
+      pressure_drop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.ModelAssumptionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelAssumptionError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.StopCriterionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      StopCriterionError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      SolidPropsInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SolidPropsInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.internal_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.internal_energy_linear_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy_linear_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.SolidPropsInterface.emissivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      emissivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.Alumina" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alumina
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alumina">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.internal_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.internal_energy_linear_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      internal_energy_linear_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.Alumina.emissivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      emissivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sco2es.PackedBed" class="md-nav__link">
+    <span class="md-ellipsis">
+      PackedBed
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PackedBed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.fluid" class="md-nav__link">
+    <span class="md-ellipsis">
+      fluid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solid" class="md-nav__link">
+    <span class="md-ellipsis">
+      solid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.max_iter" class="md-nav__link">
+    <span class="md-ellipsis">
+      max_iter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_T_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_T_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_P" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_P
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.atol_T_s" class="md-nav__link">
+    <span class="md-ellipsis">
+      atol_T_s
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_T_wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_T_wall
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_i_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_i_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_rho_f" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_rho_f
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_m_dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_m_dot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.rtol_h" class="md-nav__link">
+    <span class="md-ellipsis">
+      rtol_h
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.time_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      time_index
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.advance" class="md-nav__link">
+    <span class="md-ellipsis">
+      advance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.step" class="md-nav__link">
+    <span class="md-ellipsis">
+      step
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_fluid_solid_bed" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_fluid_solid_bed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_lid_temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_lid_temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.solve_wall_temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      solve_wall_temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_heat_transfer_coeffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_heat_transfer_coeffs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_fluid_enthalpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_fluid_enthalpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.calculate_fluid_props" class="md-nav__link">
+    <span class="md-ellipsis">
+      calculate_fluid_props
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.biot_number" class="md-nav__link">
+    <span class="md-ellipsis">
+      biot_number
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.effective_film_thickness_ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      effective_film_thickness_ratio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.void_radiative_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      void_radiative_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.surface_radiative_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      surface_radiative_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.effective_thermal_conductivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      effective_thermal_conductivity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.volumetric_convective_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      volumetric_convective_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.conv_wall_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      conv_wall_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff" class="md-nav__link">
+    <span class="md-ellipsis">
+      cond_rad_wall_heat_transfer_coeff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sco2es.PackedBed.pressure_drop" class="md-nav__link">
+    <span class="md-ellipsis">
+      pressure_drop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="reference">Reference</h1>
+<p>This is the reference for the Supercritical CO₂ Energy Storage (sCO₂ES) package (<code>sco2es</code>). The solvers are written 
+entirely in Python, using <a href="https://numba.readthedocs.io/en/stable/">Numba</a> wherever possible for just-in-time (JIT) compilation and parallelization 
+to maximize performance. </p>
+<p>By default, <a class="autorefs autorefs-internal" href="#sco2es.PackedBed"><code>sco2es.PackedBed</code></a> uses <a href="https://github.com/coolprop/coolprop">CoolProp</a> to calculate the properties of 
+CO<sub>2</sub> and assumes that the solid particles are made of alumina, for which empirical correlations are used to calculate 
+relevant properties. To use a material other than alumina, create a class matching the protocol 
+<a class="autorefs autorefs-internal" href="#sco2es.SolidPropsInterface"><code>sco2es.SolidPropsInterface</code></a> and set the <a class="autorefs autorefs-internal" href="#sco2es.PackedBed.solid"><code>sco2es.PackedBed.solid</code></a> attribute. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The model was intended for use with sCO<sub>2</sub> as the heat transfer fluid. The <code>sco2es.PackedBed.fluid</code> attribute can be 
+set to any <code>CoolProp.AbstractState</code> object, but the code has not been tested with any other fluid.</p>
+</div>
+<hr />
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Copyright © 2024 UCFRF, Inc. All Rights Reserved.</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="sco2es.ModelAssumptionError" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>ModelAssumptionError</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code>Exception</code></p>
+
+  
+      <p>Exception raised when a model assumption is not met.</p>
+
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="sco2es.StopCriterionError" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>StopCriterionError</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code>Exception</code></p>
+
+  
+      <p>Exception raised when the charge/discharge stopping criterion is not met within the allowable time.</p>
+
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="sco2es.SolidPropsInterface" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>SolidPropsInterface</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="typing_extensions.Protocol">Protocol</span></code></p>
+
+  
+      <p>Protocol class defining the required interface for updating temperature-dependent solid properties
+for the <a class="autorefs autorefs-internal" href="#sco2es.PackedBed"><code>PackedBed</code></a> model.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature [K].</p>
+        </div>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.SolidPropsInterface.internal_energy" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">internal_energy</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Internal energy, <span class="arithmatex">\(e\)</span> [J/kg].</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.SolidPropsInterface.internal_energy_linear_coeffs" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">internal_energy_linear_coeffs</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Coefficients, <span class="arithmatex">\(\alpha_1\)</span> [J/kg⋅K] and <span class="arithmatex">\(\alpha_2\)</span> [J/kg], for the linearized expression
+of internal energy:</p>
+<div class="arithmatex">\[
+e(T) = \alpha_1 T + \alpha_2
+\]</div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.SolidPropsInterface.thermal_conductivity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">thermal_conductivity</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Thermal conductivity, <span class="arithmatex">\(k\)</span> [W/m⋅K].</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.SolidPropsInterface.emissivity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">emissivity</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Emissivity, <span class="arithmatex">\(E\)</span> [-].</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="sco2es.Alumina" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>Alumina</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="sco2es.SolidPropsInterface" href="#sco2es.SolidPropsInterface">SolidPropsInterface</a></code></p>
+
+  
+      <p>An implementation of experimental correlations for alumina's relevant properties.</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.Alumina.internal_energy" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">internal_energy</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Internal energy of alumina <sup id="sco2es.Alumina.internal_energy--fnref:1"><a class="footnote-ref" href="#sco2es.Alumina.internal_energy--fn:1">1</a></sup><sup>,</sup><sup id="sco2es.Alumina.internal_energy--fnref:2"><a class="footnote-ref" href="#sco2es.Alumina.internal_energy--fn:2">2</a></sup>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.Alumina.internal_energy--fn:1">
+<p>K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+1960.&#160;<a class="footnote-backref" href="#sco2es.Alumina.internal_energy--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="sco2es.Alumina.internal_energy--fn:2">
+<p>F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+Engineering, vol. 183, p. 116032, 2021.&#160;<a class="footnote-backref" href="#sco2es.Alumina.internal_energy--fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.Alumina.internal_energy_linear_coeffs" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">internal_energy_linear_coeffs</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Linearized internal energy coefficients of alumina <sup id="sco2es.Alumina.internal_energy_linear_coeffs--fnref:1"><a class="footnote-ref" href="#sco2es.Alumina.internal_energy_linear_coeffs--fn:1">1</a></sup><sup>,</sup><sup id="sco2es.Alumina.internal_energy_linear_coeffs--fnref:2"><a class="footnote-ref" href="#sco2es.Alumina.internal_energy_linear_coeffs--fn:2">2</a></sup>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.Alumina.internal_energy_linear_coeffs--fn:1">
+<p>K. K. Kelley, "Contributions to the data on theoretical metallurgy, XIII. High-temperature heat-content,
+heat-capacity, and entropy data for the elements and inorganic compounds," in Bulletin 584 Bureau of Mines,
+1960.&#160;<a class="footnote-backref" href="#sco2es.Alumina.internal_energy_linear_coeffs--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="sco2es.Alumina.internal_energy_linear_coeffs--fn:2">
+<p>F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+Engineering, vol. 183, p. 116032, 2021.&#160;<a class="footnote-backref" href="#sco2es.Alumina.internal_energy_linear_coeffs--fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.Alumina.thermal_conductivity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">thermal_conductivity</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Thermal conductivity of alumina<sup id="sco2es.Alumina.thermal_conductivity--fnref:1"><a class="footnote-ref" href="#sco2es.Alumina.thermal_conductivity--fn:1">1</a></sup>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.Alumina.thermal_conductivity--fn:1">
+<p>"AETG/UC San Diego," [Online]. Available: www.ferp.ucsd.edu/LIB/PROPS/PANOS/al2o3.html&#160;<a class="footnote-backref" href="#sco2es.Alumina.thermal_conductivity--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.Alumina.emissivity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">emissivity</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Emissivity<sup id="sco2es.Alumina.emissivity--fnref:1"><a class="footnote-ref" href="#sco2es.Alumina.emissivity--fn:1">1</a></sup> of alumina.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.Alumina.emissivity--fn:1">
+<p>M. E. Whitson Jr, "Handbook of the Infrared Optical Properties of Al2O3. Carbon, MGO and ZrO2. Volume 1,"
+El Segundo/CA, 1975.&#160;<a class="footnote-backref" href="#sco2es.Alumina.emissivity--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="sco2es.PackedBed" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>PackedBed</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>An implementation of the packed bed thermal energy storage model described by Battisti et al.<sup id="sco2es.PackedBed--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed--fn:1">1</a></sup>.</p>
+<p>Assumptions:</p>
+<ul>
+<li>Constant solid phase density</li>
+<li>Constant wall thermal properties</li>
+<li>Constant axial spacing</li>
+<li>Constant diameter</li>
+<li>Constant temperature exterior wall boundary condition</li>
+</ul>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed--fn:1">
+<p>F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy storage
+systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal Engineering, vol.
+183, p. 116032, 2021.&#160;<a class="footnote-backref" href="#sco2es.PackedBed--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Attributes:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.n">n</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Number of nodes in the axial direction.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.m">m</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Number of wall or lid nodes in the radial or axial directions, respectively.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.nodes">nodes</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Total number of nodes.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.A_cs">A_cs</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Cross-sectional area of the packed bed [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.V_node">V_node</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Volume of a packed bed node [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.r_wall">r_wall</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Radial positions of wall nodes from centerline [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.r_bound">r_bound</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Radial positions of wall cell boundaries from centerline [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.z_top_lid">z_top_lid</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial positions of top lid nodes from charging inlet in direction of flow [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.z_bottom_lid">z_bottom_lid</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial positions of bottom lid nodes from charging inlet in direction of flow [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.V_wall">V_wall</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Volume of the wall cells [m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.A_wall_z">A_wall_z</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Surface area of the wall cell boundary in the axial direction [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code><span title="sco2es.PackedBed.A_wall_r">A_wall_r</span></code></b>
+        –
+        <div class="doc-md-description">
+          <p>Surface area of the wall cell boundary in the radial direction [m<sup>2</sup>].</p>
+        </div>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.fluid" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">fluid</span> <span class="o">=</span> <span class="n">CP</span><span class="o">.</span><span class="n">AbstractState</span><span class="p">(</span><span class="s1">&#39;BICUBIC&amp;HEOS&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p><a href="http://www.coolprop.org/apidoc/CoolProp.AbstractState.html"><code>CoolProp.AbstractState</code></a> object for accessing 
+fluid properties. By default, CO<sub>2</sub> properties are tabulated for the Helmholtz-based equation of state (HEOS)
+and bicubic interpolation is used for performance.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.solid" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">solid</span><span class="p">:</span> <span class="n">SolidPropsInterface</span> <span class="o">=</span> <span class="n">Alumina</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p><a class="autorefs autorefs-internal" href="#sco2es.SolidPropsInterface"><code>SolidPropsInterface</code></a> for calculating temperature-dependent properties of the 
+solid phase.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.max_iter" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Maximum number of iterations for the loop.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.atol_T_f" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">atol_T_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Absolute tolerance for fluid temperature [ºC].</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.atol_P" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">atol_P</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Absolute tolerance for pressure [Pa].</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.atol_T_s" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">atol_T_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Absolute tolerance for solid temperature [ºC].</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.rtol_T_wall" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">rtol_T_wall</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0005</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Relative tolerance for wall and lid temperatures.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.rtol_i_f" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">rtol_i_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Relative tolerance for fluid enthalpy.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.rtol_rho_f" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">rtol_rho_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Relative tolerance for fluid density.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.rtol_m_dot" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">rtol_m_dot</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Relative tolerance for mass flow rate.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="sco2es.PackedBed.rtol_h" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">rtol_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Relative tolerance for volumetric and wall heat transfer coefficients.</p>
+  </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.__init__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">T_initial</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">rho_s</span><span class="p">,</span> <span class="n">T_env</span><span class="p">,</span> <span class="n">t_wall</span><span class="p">,</span> <span class="n">k_wall</span><span class="p">,</span> <span class="n">rho_wall</span><span class="p">,</span> <span class="n">cp_wall</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_wall</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_initial</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Discharge temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Initial pressure [Pa].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>L</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Domain length [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>D</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Internal tank diameter [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Void fraction.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_s</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Density of the solid [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_env</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Temperature of the environment [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>t_wall</code></b>
+            (<code><span title="numpy.typing.ArrayLike">ArrayLike</span></code>)
+        –
+        <div class="doc-md-description">
+          <p>Thickness of each wall layer [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_wall</code></b>
+            (<code><span title="numpy.typing.ArrayLike">ArrayLike</span></code>)
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of each wall layer [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_wall</code></b>
+            (<code><span title="numpy.typing.ArrayLike">ArrayLike</span></code>)
+        –
+        <div class="doc-md-description">
+          <p>Density of each wall layer [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp_wall</code></b>
+            (<code><span title="numpy.typing.ArrayLike">ArrayLike</span></code>)
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity of each wall layer [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>n</code></b>
+            (<code>int</code>, default:
+                <code>100</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Number of axial nodes.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>n_wall</code></b>
+            (<code>int | <span title="numpy.typing.ArrayLike">ArrayLike</span></code>, default:
+                <code>10</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Number of nodes for each wall layer.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.time_index" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">time_index</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>A function for retrieving the index of the simulation time step with the closest elapsed time
+to the given time.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.advance" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">advance</span><span class="p">(</span><span class="n">T_inlet</span><span class="p">,</span> <span class="n">P_inlet</span><span class="p">,</span> <span class="n">m_dot_inlet</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="mi">12</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">T_outlet_stop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">discharge</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Advances the simulation until the charge/discharge stopping criterion is satisfied.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Inlet fluid temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Pressure at the inlet [Pa].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate of the inlet stream [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>t_max</code></b>
+            (<code>float</code>, default:
+                <code>12 * 60 * 60</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Maximum time advancement [s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_outlet_stop</code></b>
+            (<code>float</code>, default:
+                <code>None</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Outlet fluid temperature [K] condition for stopping.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dt</code></b>
+            (<code>float</code>, default:
+                <code>10</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Time step [s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>discharge</code></b>
+            (<code>bool</code>, default:
+                <code>False</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Flag indicating that the system is discharging.</p>
+        </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Returns:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        –
+        <div class="doc-md-description">
+          <p>Time at which the charging/discharging stop criterion was satisfied.</p>
+      </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Raises:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+            <code><a class="autorefs autorefs-internal" title="sco2es.ModelAssumptionError" href="#sco2es.ModelAssumptionError">ModelAssumptionError</a></code>
+          –
+        <div class="doc-md-description">
+          <p>Raised if the Biot number exceeds the acceptable threshold (<span class="arithmatex">\(Bi &gt; 0.1\)</span>).</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+            <code><a class="autorefs autorefs-internal" title="sco2es.StopCriterionError" href="#sco2es.StopCriterionError">StopCriterionError</a></code>
+          –
+        <div class="doc-md-description">
+          <p>Raised if the stop criterion are not met within the maximum allowed
+charging/discharging time (<code>t_max</code>).</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.step" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">step</span><span class="p">(</span><span class="n">T_inlet</span><span class="p">,</span> <span class="n">P_inlet</span><span class="p">,</span> <span class="n">m_dot_inlet</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">discharge</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the state of the packed bed at the next time step using an iterative algorithm.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Temperature of the inlet stream [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Pressure at the inlet [Pa].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot_inlet</code></b>
+            (<code>float</code>)
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate of the inlet stream [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dt</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Time step [s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>discharge</code></b>
+            (<code>bool</code>, default:
+                <code>False</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Flag indicating that the system is discharging.</p>
+        </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Returns:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        –
+        <div class="doc-md-description">
+          <p>Number of iterations required for convergence.</p>
+      </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.solve_fluid_solid_bed" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">solve_fluid_solid_bed</span><span class="p">(</span><span class="n">i_f_0</span><span class="p">,</span> <span class="n">i_inlet</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">e_s_0</span><span class="p">,</span> <span class="n">alpha1</span><span class="p">,</span> <span class="n">alpha2</span><span class="p">,</span> <span class="n">rho_f</span><span class="p">,</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">rho_s</span><span class="p">,</span> <span class="n">P_intf</span><span class="p">,</span> <span class="n">P_intf_0</span><span class="p">,</span> <span class="n">m_dot</span><span class="p">,</span> <span class="n">T_wall</span><span class="p">,</span> <span class="n">T_lid_inlet</span><span class="p">,</span> <span class="n">T_lid_outlet</span><span class="p">,</span> <span class="n">k_eff</span><span class="p">,</span> <span class="n">h_wall</span><span class="p">,</span> <span class="n">h_v</span><span class="p">,</span> <span class="n">A_wall</span><span class="p">,</span> <span class="n">A_cs</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Solves for the fluid enthalpy and solid temperature for the next time step.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>i_f_0</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid enthalpy for the previous time step [J/kg].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>i_inlet</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid enthalpy at the inlet [J/kg].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>g</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid temperature-enthalpy coupling factor [K⋅kg/J].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>e_s_0</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Solid internal energy for the previous time step [J/kg].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>alpha1</code></b>
+        –
+        <div class="doc-md-description">
+          <p>First linearized parameter for solid internal energy.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>alpha2</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Second linearized parameter for solid internal energy.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid density estimates for the next time step [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_0</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid densities for the previous time step [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Density of the solid [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P_intf</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Pressure estimate at the interfaces for the next time step [Pa].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P_intf_0</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Pressure at the interfaces for the previous time step [Pa].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate estimate at node interfaces [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Wall interface temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_lid_inlet</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature of the lid at the inlet [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_lid_outlet</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature of the lid at the outlet [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_eff</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Effective thermal conductivity [W/m⋅K]</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Wall heat transfer coefficient [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_v</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Volumetric heat transfer coefficient [W/m<sup>3</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>A_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Surface area of the node wall boundary [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>A_cs</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Cross-sectional area [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>V</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Node volume [m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction [-].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dz</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial node spacing [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dt</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Time step [s].</p>
+        </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Returns:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+<b><code>i_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Fluid enthalpy for the next time step [J/kg].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>T_s</code></b>        –
+        <div class="doc-md-description">
+          <p>Solid temperature for the next time step [K].</p>
+      </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.solve_lid_temperature" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">solve_lid_temperature</span><span class="p">(</span><span class="n">T_lid</span><span class="p">,</span> <span class="n">T_f</span><span class="p">,</span> <span class="n">T_env</span><span class="p">,</span> <span class="n">h_wall</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Solves for the lid temperature profile for the next time step. The boundary conditions are
+taken as:</p>
+<ul>
+<li>Heat loss to environment by conduction at <code>i=0</code></li>
+<li>Heat loss to fluid by convection at <code>i=m-1</code></li>
+<li>Insulated at radial surfaces</li>
+</ul>
+<p>The <code>reverse</code> keyword can be used to reverse the axial orientation of the boundary conditions.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_lid</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Lid temperature for the previous time step [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid temperature estimate for the next time step at convection boundary [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_env</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Environment temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Wall heat transfer coefficient [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Density [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>z</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial positions of node centers [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>V</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Node volumes [m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>A</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Area of lid [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dt</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Time step [s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>reverse</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Flag for reversing boundary conditions.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.solve_wall_temperature" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">solve_wall_temperature</span><span class="p">(</span><span class="n">T_wall</span><span class="p">,</span> <span class="n">T_f</span><span class="p">,</span> <span class="n">T_env</span><span class="p">,</span> <span class="n">h_wall</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dr</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">A_r</span><span class="p">,</span> <span class="n">A_z</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Solves for the lid temperature profile for the next time step. The boundary conditions are
+taken as:</p>
+<ul>
+<li>Heat loss to fluid by convection at <code>j=0</code></li>
+<li>Heat loss to environment by conduction at <code>j=m-1</code></li>
+<li>Insulated axially at <code>i=0</code> and <code>i=n-1</code></li>
+</ul>
+<p>where the domain is discretized with <code>n</code> nodes in the axial direction and <code>m</code> in the radial
+direction, and the wall temperature <code>T_wall</code> has the shape <code>(n, m)</code>.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Wall temperature for the previous time step [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Fluid temperature estimate for the next time step [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_env</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Environment temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_wall</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Wall heat transfer coefficient [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity [W/m K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Density [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>r</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Radial positions of node centers [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dr</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Radial node width [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dz</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial node spacing [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>V</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Node volumes [m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>A_r</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Area of node interfaces in the radial direction [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>A_z</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Area of node interfaces in the axial direction [m<sup>2</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>dt</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Time step [s].</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.calculate_heat_transfer_coeffs" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">calculate_heat_transfer_coeffs</span><span class="p">(</span><span class="n">m_dot</span><span class="p">,</span> <span class="n">T_f</span><span class="p">,</span> <span class="n">k_f</span><span class="p">,</span> <span class="n">cp_f</span><span class="p">,</span> <span class="n">mu_f</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">E_s</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the relevant heat transfer coefficients for the packed bed.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>T_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature of the fluid [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity of the fluid [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>mu_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Dynamic viscosity of the fluid [Pa⋅s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the solid [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>E_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Emissivity of the solid.</p>
+        </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Returns:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+<b><code>k_eff</code></b>        –
+        <div class="doc-md-description">
+          <p>Effective thermal conductivity [W/m⋅K].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>h_wall</code></b>        –
+        <div class="doc-md-description">
+          <p>Wall heat transfer coefficient [W/m<sup>2</sup>⋅K].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>h_v</code></b>        –
+        <div class="doc-md-description">
+          <p>Volumetric heat transfer coefficient [W/m<sup>3</sup>⋅K].</p>
+      </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.calculate_fluid_enthalpy" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">calculate_fluid_enthalpy</span><span class="p">(</span><span class="n">T_f</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the <a class="autorefs autorefs-internal" href="#sco2es.PackedBed.fluid"><code>fluid</code></a> mass-specific enthalpy at each node.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Pressure [Pa].</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.calculate_fluid_props" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">calculate_fluid_props</span><span class="p">(</span><span class="n">i_f</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the <a class="autorefs autorefs-internal" href="#sco2es.PackedBed.fluid"><code>fluid</code></a> temperature, thermal conductivity, density, viscosity, and
+specific heat capacity at each node.</p>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>i_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Mass-specific enthalpy of the fluid [J/kg].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>P</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Pressure [Pa].</p>
+        </div>
+      </li>
+  </ul>
+
+
+
+  <p><span class="doc-section-title">Returns:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+<b><code>T_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Temperature of the fluid [K].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>k_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid [W/m⋅K].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>rho_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Density of the fluid [kg/m<sup>3</sup>].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>mu_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Dynamic viscosity of the fluid [Pa⋅s].</p>
+      </div>
+      </li>
+      <li class="doc-section-item field-body">
+<b><code>cp_f</code></b>        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity of the fluid [J/kg⋅K].</p>
+      </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.biot_number" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">biot_number</span><span class="p">(</span><span class="n">h_v</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">k_s</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the biot number (<span class="arithmatex">\(Bi\)</span>) for a packed bed<sup id="sco2es.PackedBed.biot_number--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.biot_number--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+Bi = \frac{h_v d^2}{36(1 - \varepsilon) k_s}
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.biot_number--fn:1">
+<p>F. Battisti, L. de Araujo Passos, and A. da Silva, “Performance mapping of packed-bed thermal energy
+storage systems for concentrating solar-powered plants using supercritical carbon dioxide,” Applied Thermal
+Engineering, vol. 183, p. 116032, 2021.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.biot_number--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>h_v</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Volumetric heat transfer coefficient, <span class="arithmatex">\(h_v\)</span> [W/m<sup>3</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the solid, <span class="arithmatex">\(k_s\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.effective_film_thickness_ratio" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">effective_film_thickness_ratio</span><span class="p">(</span><span class="n">k_f</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the ratio between the effective thickness of the fluid film adjacent to the surface of two solid
+particles and the particle diameter according to the interpolation of Kunii and Smith<sup id="sco2es.PackedBed.effective_film_thickness_ratio--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.effective_film_thickness_ratio--fn:1">1</a></sup> for
+<span class="arithmatex">\(0.260 \leq \varepsilon \leq 0.476\)</span></p>
+<div class="arithmatex">\[
+\phi = \phi_2 + (\phi_1 - \phi_2) \frac{\varepsilon - 0.260}{0.216}
+\]</div>
+<p>where</p>
+<div class="arithmatex">\[
+\phi_i = \frac{1}{2} \frac{\left(\frac{\kappa-1}{\kappa}\right)^2 \sin^2{\theta_i}} {\ln\left[\kappa -
+(\kappa - 1)\cos{\theta_i}\right] - \left(\frac{\kappa - 1}{\kappa}\right) (1 - \cos{\theta_i)}} - \frac{2}{3\kappa}
+\]</div>
+<p>where <span class="arithmatex">\(\kappa = k_s/k_f\)</span> and the interpolation bounds are given by <span class="arithmatex">\(\sin^2 \theta_i = \frac{1}{n_i}\)</span> for
+<span class="arithmatex">\(n_1 = 1.5\)</span> and <span class="arithmatex">\(n_2 = 4\sqrt{3}\)</span>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.effective_film_thickness_ratio--fn:1">
+<p>D. Kunii and J. Smith, “Heat transfer characteristics of porous rocks,” AIChE Journal, vol. 6, no. 1, pp.
+71–78, 1960.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.effective_film_thickness_ratio--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>k_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the solid, <span class="arithmatex">\(k_s\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid, <span class="arithmatex">\(k_f\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.void_radiative_heat_transfer_coeff" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">void_radiative_heat_transfer_coeff</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">E_s</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the void-to-void radiative heat transfer coefficient for a packed bed given by the correlation of Yagi
+and Kunii<sup id="sco2es.PackedBed.void_radiative_heat_transfer_coeff--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.void_radiative_heat_transfer_coeff--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+h_{rv} = \frac{0.1952}{1 + \frac{\varepsilon (1-E_s)}{2E_s (1-\varepsilon)}} \left(\frac{T}{100}\right)^3
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.void_radiative_heat_transfer_coeff--fn:1">
+<p>S. Yagi and D. Kunii, “Studies on effective thermal conductivities in packed beds,” AIChE Journal,
+vol. 3, no. 3, pp. 373–381, 1957.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.void_radiative_heat_transfer_coeff--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature, <span class="arithmatex">\(T\)</span> [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>E_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Emissivity of the solid, <span class="arithmatex">\(E_s\)</span>.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.surface_radiative_heat_transfer_coeff" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">surface_radiative_heat_transfer_coeff</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">E_s</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the surface-to-surface radiative heat transfer coefficient for a packed bed given by the correlation of
+Yagi and Kunii<sup id="sco2es.PackedBed.surface_radiative_heat_transfer_coeff--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.surface_radiative_heat_transfer_coeff--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+h_{rs} = \frac{0.1952E_s}{2-E_s} \left( \frac{T}{100}\right)^3
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.surface_radiative_heat_transfer_coeff--fn:1">
+<p>S. Yagi and D. Kunii, “Studies on effective thermal conductivities in packed beds,” AIChE Journal,
+vol. 3, no. 3, pp. 373–381, 1957.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.surface_radiative_heat_transfer_coeff--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>T</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Temperature, <span class="arithmatex">\(T\)</span> [K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>E_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Emissivity of the solid, <span class="arithmatex">\(E_s\)</span>.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.effective_thermal_conductivity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">effective_thermal_conductivity</span><span class="p">(</span><span class="n">k_f</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">h_rv</span><span class="p">,</span> <span class="n">h_rs</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Approximates the effective thermal conductivity in a packed bed using the model of Kunii and Smith<sup id="sco2es.PackedBed.effective_thermal_conductivity--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.effective_thermal_conductivity--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+k_{eff} = k_f \left[\varepsilon\left(1+\beta \frac{h_{r\nu}d}{k_f}\right) +
+\frac{\beta (1-\varepsilon}{\frac{1}{\frac{1}{\phi}+\frac{h_{rs}d}{k_f}}
++\gamma\left(\frac{k_f}{k_s}\right)} \right]
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.effective_thermal_conductivity--fn:1">
+<p>D. Kunii and J. Smith, “Heat transfer characteristics of porous rocks,” AIChE Journal, vol. 6, no. 1,
+pp. 71–78, 1960.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.effective_thermal_conductivity--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid, <span class="arithmatex">\(k_f\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the solid, <span class="arithmatex">\(k_s\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction. <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_rv</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void-to-void radiative heat transfer coefficient, <span class="arithmatex">\(h_{rv}\)</span> [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_rs</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Surface-to-surface radiative heat transfer coefficient, <span class="arithmatex">\(h_{rs}\)</span> [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>phi</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Effective film thickness ratio, <span class="arithmatex">\(\phi\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Solid particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>beta</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Ratio of the average length between the centers of two neighboring solids to
+the mean particle diameter, <span class="arithmatex">\(\beta = 0.9\)</span> (default).</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.volumetric_convective_heat_transfer_coeff" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">volumetric_convective_heat_transfer_coeff</span><span class="p">(</span><span class="n">m_dot</span><span class="p">,</span> <span class="n">k_f</span><span class="p">,</span> <span class="n">cp_f</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the volumetric convective heat transfer coefficient as the product of the convective heat
+transfer coefficient for a spherical particle and the ratio between the particles total heat transfer area
+and the total volume</p>
+<div class="arithmatex">\[
+h_v = h_{part} \frac{6(1-\varepsilon)}{d}
+\]</div>
+<p>The particle convective heat transfer coefficient is given by Pfeffer's correlation<sup id="sco2es.PackedBed.volumetric_convective_heat_transfer_coeff--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.volumetric_convective_heat_transfer_coeff--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+h_{part} = 1.26 \left[\frac{1-(1-\varepsilon)^{5/3}}{W}\right]^{1/3} (c_{p_f} G)^{1/3}
+\left(\frac{k_f}{d}\right)^{2/3}
+\]</div>
+<p>where <span class="arithmatex">\(W\)</span> is given by</p>
+<div class="arithmatex">\[
+W = 2-3(1-\varepsilon)^{1/3}+3(1-\varepsilon)^{5/3}-2(1-\varepsilon)^2
+\]</div>
+<p>and <span class="arithmatex">\(G\)</span> is the effective mass flow rate per unit area given by</p>
+<div class="arithmatex">\[
+G = \frac{4\dot{m}}{\varepsilon \pi D^2}
+\]</div>
+<p>The lower limit of analytical heat transfer is given by</p>
+<div class="arithmatex">\[
+h_{part} = \frac{2k_f}{d}
+\]</div>
+<p>for a heated isothermal sphere in a quiescent fluid medium; therefore, the maximum of the two values is taken.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.volumetric_convective_heat_transfer_coeff--fn:1">
+<p>R. Pfeffer, “Heat and mass transport in multiparticle systems,” Industrial &amp; Engineering Chemistry
+Fundamentals, vol. 3, no. 4, pp. 380–383, 1964.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.volumetric_convective_heat_transfer_coeff--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid, <span class="arithmatex">\(k_f\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity of the fluid, <span class="arithmatex">\(c_{p_f}\)</span> [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>D</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Diameter [m].</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.conv_wall_heat_transfer_coeff" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">conv_wall_heat_transfer_coeff</span><span class="p">(</span><span class="n">m_dot</span><span class="p">,</span> <span class="n">k_f</span><span class="p">,</span> <span class="n">cp_f</span><span class="p">,</span> <span class="n">mu_f</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the convective heat transfer coefficient between the fluid and the wall</p>
+<div class="arithmatex">\[
+h_{wall}^{cv} = \left( 2.58 Re_d^{1/3} Pr^{1/3} + 0.094 Re_d^{0.8} Pr^{0.4} \right) \frac{k_f}{d}
+\]</div>
+<p>according to the correlation of Beek<sup id="sco2es.PackedBed.conv_wall_heat_transfer_coeff--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.conv_wall_heat_transfer_coeff--fn:1">1</a></sup>. The Reynolds number <span class="arithmatex">\(Re_d\)</span> is defined as</p>
+<div class="arithmatex">\[
+Re_d = \frac{\rho_f u_0 d}{\mu_f}
+\]</div>
+<p>where <span class="arithmatex">\(u_0\)</span> is the superficial velocity, or the velocity if no particles were present, given by</p>
+<div class="arithmatex">\[
+u_0 = \frac{\dot{m}}{\rho_f A}
+\]</div>
+<p>The Prandtl number <span class="arithmatex">\(Pr\)</span> is defined as</p>
+<div class="arithmatex">\[
+Pr = \frac{{c_p}_f \mu_f}{k_f}
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.conv_wall_heat_transfer_coeff--fn:1">
+<p>J. Beek, “Design of packed catalytic reactors,” in Advances in Chemical Engineering, Elsevier,
+1962, pp. 203–271.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.conv_wall_heat_transfer_coeff--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>m_dot</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Mass flow rate, <span class="arithmatex">\(\dot{m}\)</span> [kg/s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid, <span class="arithmatex">\(k_f\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>cp_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Specific heat capacity of the fluid, <span class="arithmatex">\({c_p}_f\)</span> [J/kg⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>mu_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Dynamic viscosity of the fluid, <span class="arithmatex">\(\mu_f\)</span> [Pa⋅s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>D</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Diameter, <span class="arithmatex">\(D\)</span> [m].</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">cond_rad_wall_heat_transfer_coeff</span><span class="p">(</span><span class="n">k_f</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">h_rv</span><span class="p">,</span> <span class="n">h_rs</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the conductive and radiative wall heat transfer coefficient according to Ofuchi and Kunii<sup id="sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+h_{wall}^{cd,ra} = \frac{k_{eff}^{stag} k_{wall}^{stag}}{k_{eff}^{stag} - \frac{k_{wall}^{stag}}{2}}
+\]</div>
+<p>where</p>
+<div class="arithmatex">\[
+k_{eff}^{stag} = k_f \left[\varepsilon \left(1 + \frac{h_{rv}d}{k_f}\right) +
+\frac{1-\varepsilon}{\left(\frac{1}{\phi}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{2}{3\kappa}}\right]
+\]</div>
+<p>and</p>
+<div class="arithmatex">\[
+k_{wall}^{stag} = k_f \left[\varepsilon_{wall} \left(2 + \frac{h_{rv}d}{k_f}\right) +
+\frac{1-\varepsilon_{wall}}{\left(\frac{1}{\phi_{wall}}+\frac{h_{rs}d}{k_f}\right)^{-1} + \frac{1}{3\kappa}}\right]
+\]</div>
+<p>where the wall porosity, <span class="arithmatex">\(\varepsilon_{wall}\)</span>, is assumed to be <span class="arithmatex">\(0.4\)</span> and <span class="arithmatex">\(\phi_{wall}\)</span> is given by</p>
+<div class="arithmatex">\[
+\phi_{wall} = \frac{1}{4} \frac{\left(\frac{\kappa-1}{\kappa}\right)^2}{\ln{\kappa} - \frac{\kappa-1}{\kappa}} -
+\frac{1}{3\kappa}
+\]</div>
+<p>where <span class="arithmatex">\(\kappa = k_s/k_f\)</span>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff--fn:1">
+<p>K. Ofuchi and D. Kunii, “Heat-transfer characteristics of packed beds with stagnant fluids,” International
+Journal of Heat and Mass Transfer, vol. 8, no. 5, pp. 749–757, 1965.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.cond_rad_wall_heat_transfer_coeff--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>k_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the fluid, <span class="arithmatex">\(k_f\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>k_s</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Thermal conductivity of the solid, <span class="arithmatex">\(k_s\)</span> [W/m⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_rv</code></b>
+        –
+        <div class="doc-md-description">
+          <p>void-to-void radiative heat transfer coefficient, <span class="arithmatex">\(h_{rv}\)</span> [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>h_rs</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Solid-to-solid radiative heat transfer coefficient, <span class="arithmatex">\(h_{rs}\)</span> [W/m<sup>2</sup>⋅K].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>phi</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Effective film thickness ratio, <span class="arithmatex">\(\phi\)</span>.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="sco2es.PackedBed.pressure_drop" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">pressure_drop</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span> <span class="n">rho_f</span><span class="p">,</span> <span class="n">mu_f</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">psi</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">xi1</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">xi2</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the pressure drop using the modified Ergun's equation<sup id="sco2es.PackedBed.pressure_drop--fnref:1"><a class="footnote-ref" href="#sco2es.PackedBed.pressure_drop--fn:1">1</a></sup></p>
+<div class="arithmatex">\[
+\Delta P = \frac{\Delta z G^2}{\rho_f d} \left[ \xi_1 \frac{(1-\epsilon)^2}{\epsilon^3 \psi^2} \frac{\mu_f}{Gd}
++ \xi_2 \frac{(1-\epsilon)}{\epsilon^3 \psi}\right]
+\]</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="sco2es.PackedBed.pressure_drop--fn:1">
+<p>I. Macdonald, M. El-Sayed, K. Mow, and F. Dullien, “Flow through porous media-the Ergun equation revisited,”
+Industrial &amp; Engineering Chemistry Fundamentals, vol. 18, no. 3, pp. 199–208, 1979.&#160;<a class="footnote-backref" href="#sco2es.PackedBed.pressure_drop--fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+  <p><span class="doc-section-title">Parameters:</span></p>
+  <ul>
+      <li class="doc-section-item field-body">
+        <b><code>dz</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Axial position step size, <span class="arithmatex">\(\Delta z\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>rho_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Density of the fluid, <span class="arithmatex">\(\rho_f\)</span> [kg/m<sup>3</sup>].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>mu_f</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Dynamic viscosity of the fluid, <span class="arithmatex">\(\mu_f\)</span> [Pa⋅s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>G</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Effective mass flow rate per unit cross-section, <span class="arithmatex">\(G\)</span> [kg/m<sup>2</sup>⋅s].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>eps</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Void fraction, <span class="arithmatex">\(\varepsilon\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>d</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Particle diameter, <span class="arithmatex">\(d\)</span> [m].</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>psi</code></b>
+        –
+        <div class="doc-md-description">
+          <p>Sphericity, <span class="arithmatex">\(\psi\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>xi1</code></b>
+            (<code>float</code>, default:
+                <code>180</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Viscous loss coefficient, <span class="arithmatex">\(\xi_1\)</span>.</p>
+        </div>
+      </li>
+      <li class="doc-section-item field-body">
+        <b><code>xi2</code></b>
+            (<code>float</code>, default:
+                <code>1.8</code>
+)
+        –
+        <div class="doc-md-description">
+          <p>Inertial loss coefficient, <span class="arithmatex">\(\xi_2\)</span>.</p>
+        </div>
+      </li>
+  </ul>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 UCFRF, Inc. All Rights Reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["search.highlight"], "search": "assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
