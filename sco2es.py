@@ -1,4 +1,4 @@
-"""© 2023-2024 University of Central Florida. All rights reserved."""
+"""Copyright © 2024 UCFRF, Inc. All Rights Reserved."""
 
 __version__ = "0.0.1"
 

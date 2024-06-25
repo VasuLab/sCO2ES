@@ -4,10 +4,12 @@
 packed bed thermal energy storage systems. This work is based on the model detailed by Battisti et al.[^1].
 
 > [!IMPORTANT]
-> This software is licensed under the [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license which 
-> restricts commercial use. The software can be used for academic purposes, but if you are interested in using this
-> software for commercial purposes, please contact the University of Central Florida's 
-> [Technology Transfer Office](https://tt.research.ucf.edu/).
+> This software is licensed under the [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license 
+> The software can be used for academic purposes, but if you are interested in using this
+> software for commercial purposes, please contact the University of Central Florida Research Foundation's 
+> [Technology Transfer Office](https://tt.research.ucf.edu/) to negotiate a commercial license.
+> 
+> Copyright © 2024 UCFRF, Inc. All Rights Reserved
 
 ## Performance
 
