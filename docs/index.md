@@ -1,4 +1,6 @@
 ---
+title: Supercritical CO2 Energy Storage (sCO2ES) Reference
+description: A 1-D transient solver for supercritical CO2 packed bed thermal energy storage implemented in Python.
 hide:
 - navigation
 ---
