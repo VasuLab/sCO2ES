@@ -1,6 +1,7 @@
 site_name: Supercritical CO₂ Energy Storage (sCO₂ES)
 repo_url: https://github.com/VasuLab/sCO2ES
 repo_name: VasuLab/sCO2ES
+site_url: https://vasulab.github.io/sCO2ES/
 copyright: "Copyright &copy; 2024 UCFRF, Inc. All Rights Reserved."
 
 theme:
@@ -9,6 +10,7 @@ theme:
     repo: fontawesome/brands/github
   features:
     - search.highlight
+    - toc.follow
   palette:
 
     # Palette toggle for automatic mode
@@ -39,6 +41,7 @@ theme:
 
 plugins:
 - search
+- social
 - mkdocstrings:
     handlers:
       python:
@@ -48,7 +51,8 @@ plugins:
           show_root_toc_entry: False
           show_source: False
           show_signature: True
-          show_symbol_type_heading: true
+          show_symbol_type_heading: True
+          show_symbol_type_toc: True
 
 watch:
   - sco2es.py
@@ -63,9 +67,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.tilde
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra_css:
   - stylesheets/extra.css

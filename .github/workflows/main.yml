@@ -28,4 +28,4 @@ jobs:
         run: poetry install --with docs
       - run: git fetch origin gh-pages --depth=1
       - name: Deploy docs
-        run: mkdocs gh-deploy
+        run: poetry run mkdocs gh-deploy
