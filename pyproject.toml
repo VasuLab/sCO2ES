@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10, <3.12"
+python = ">=3.10, <3.13"
 CoolProp = ">= 6.6.0"
 numpy = ">= 1.26.0"
 numba = ">= 0.59.0"
