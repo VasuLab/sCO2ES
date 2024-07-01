@@ -4,8 +4,7 @@ __version__ = "0.0.1"
 
 
 from abc import abstractmethod
-from typing import Callable
-from typing_extensions import Protocol
+from typing import Protocol
 
 import numpy as np
 import numpy.typing as npt
