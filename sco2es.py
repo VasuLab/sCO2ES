@@ -24,10 +24,10 @@ class StopCriterionError(Exception):
 class SolidPropsInterface(Protocol):
     """Protocol class defining the required interface for updating temperature-dependent solid properties
     for the [`PackedBed`][sco2es.PackedBed] model.
-
-    Parameters:
-        T: Temperature [K].
     """
+
+    density: float
+    r"""Density, $\rho$ [kg/m^3^]."""
 
     @staticmethod
     @abstractmethod
@@ -59,6 +59,8 @@ class SolidPropsInterface(Protocol):
 
 class Alumina(SolidPropsInterface):
     """An implementation of experimental correlations for alumina's relevant properties."""
+
+    density = 3950
 
     @staticmethod
     def internal_energy(T):
@@ -184,7 +186,6 @@ class PackedBed:
             D: float,
             d: float,
             eps: float,
-            rho_s: float,
             T_env: float,
             t_wall: npt.ArrayLike,
             k_wall: npt.ArrayLike,
@@ -192,7 +193,9 @@ class PackedBed:
             cp_wall: npt.ArrayLike,
             *,
             n: int = 100,
-            n_wall: int | npt.ArrayLike = 10):
+            n_wall: int | npt.ArrayLike = 10,
+            solid: SolidPropsInterface | None = None
+    ):
         """
         Parameters:
             T_initial: Discharge temperature [K].
@@ -201,7 +204,6 @@ class PackedBed:
             D: Internal tank diameter [m].
             d: Particle diameter [m].
             eps: Void fraction.
-            rho_s: Density of the solid [kg/m^3^].
             T_env: Temperature of the environment [K].
             t_wall: Thickness of each wall layer [m].
             k_wall: Thermal conductivity of each wall layer [W/m⋅K].
@@ -209,6 +211,7 @@ class PackedBed:
             cp_wall: Specific heat capacity of each wall layer [J/kg⋅K].
             n: Number of axial nodes.
             n_wall: Number of nodes for each wall layer.
+            solid: Solid properties interface.
         """
 
         # Simulation parameters
@@ -218,6 +221,9 @@ class PackedBed:
         self.t = np.array([0])
         self.charging = np.array([], dtype=bool)
         self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
+
+        if solid is not None:
+            self.solid = solid
 
         # Packed bed parameters
         self.D = D
@@ -237,7 +243,7 @@ class PackedBed:
 
         # Solid properties
         self.T_s = np.full((1, n), T_initial, dtype=float)
-        self.rho_s = rho_s
+        self.rho_s = self.solid.density
         self.E_s = self.solid.emissivity(self.T_s[0])
         self.k_s = self.solid.thermal_conductivity(self.T_s[0])
 
