@@ -11,6 +11,7 @@ import numpy.typing as npt
 from numba import njit, prange
 import scipy
 import CoolProp as CP
+from ruamel.yaml import YAML
 
 
 class ModelAssumptionError(Exception):
@@ -327,6 +328,42 @@ class PackedBed:
         self.k_top_lid = self.k_wall[::-1]
         self.rho_top_lid = self.rho_wall[::-1]
         self.cp_top_lid = self.cp_wall[::-1]
+
+    @classmethod
+    def load_case(cls, case_file: str):
+        """
+        Loads a packed bed simulation case file in YAML format.
+
+        Parameters:
+            case_file: Filepath to the simulation case file.
+        """
+
+        yaml = YAML(typ="safe")
+        with open(case_file, "r") as f:
+            case = yaml.load(f)
+
+        if case["simulation"]["boundary-conditions"]["type"] != "constant-temperature":
+            raise NotImplementedError("Only constant-temperature boundary conditions are currently supported.")
+
+        wall = case["system"]["wall"]
+        if not wall:  # Check for empty list
+            raise ValueError("At least one wall layer must be defined in the case file.")
+
+        return cls(
+            T_initial=case["simulation"]["initial-conditions"]["temperature"],
+            P=case["simulation"]["initial-conditions"]["pressure"],
+            L=case["system"]["packed-bed"]["length"],
+            D=case["system"]["packed-bed"]["diameter"],
+            d=case["system"]["packed-bed"]["particle-diameter"],
+            eps=case["system"]["packed-bed"]["void-fraction"],
+            T_env=case["simulation"]["boundary-conditions"]["temperature"],
+            t_wall=[layer["thickness"] for layer in wall],
+            k_wall=[layer["thermal-conductivity"] for layer in wall],
+            rho_wall=[layer["density"] for layer in wall],
+            cp_wall=[layer["specific-heat"] for layer in wall],
+            n=case["simulation"]["grid"]["axial-nodes"],
+            n_wall=case["simulation"]["grid"]["wall-layer-nodes"]
+        )
 
     @staticmethod
     def _interp(x):
