@@ -20,6 +20,9 @@ ruamel-yaml = "^0.18.6"
 mkdocs = "1.6.0"
 mkdocs-material = {version = "9.5.27", extras = ["imaging"]}
 mkdocstrings-python = "1.10.0"
+scienceplots = "^2.1.1"
+matplotlib-label-lines = "^0.7.0"
+mkdocs-jupyter = "^0.24.8"
 
 
 [tool.poetry.group.dev.dependencies]
