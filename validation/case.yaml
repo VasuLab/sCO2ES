@@ -1,0 +1,33 @@
+system:
+  packed-bed:
+    length: 9.1
+    diameter: 3.5
+    particle-diameter: 0.003
+    void-fraction: 0.35
+  wall:
+    - name: insulation
+      thickness: 0.102
+      thermal-conductivity: 0.25
+      density: 250
+      specific-heat: 1190
+    - name: steel
+      thickness: 0.127
+      thermal-conductivity: 11.7
+      density: 8050
+      specific-heat: 483.1
+    - name: ground
+      thickness: 0.674
+      thermal-conductivity: 2.9
+      density: 2650
+      specific-heat: 732.2
+
+simulation:
+  grid:
+    axial-nodes: 1200
+    wall-layer-nodes: 10
+  initial-conditions:
+    temperature: 300
+    pressure: 27.5e6
+  boundary-conditions:
+    type: constant-temperature
+    temperature: 283
