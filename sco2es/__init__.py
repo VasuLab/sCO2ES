@@ -1278,7 +1278,8 @@ class PackedBed:
 
     @staticmethod
     @np.vectorize
-    def pressure_drop(dz, rho_f, mu_f, G, eps, d, *, psi=0.9, xi1: float = 180, xi2: float = 1.8):
+    def pressure_drop(
+            dz: float,
             rho_f: float,
             mu_f: float,
             G: float,

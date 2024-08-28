@@ -55,7 +55,7 @@ plugins:
           show_symbol_type_toc: True
 
 watch:
-  - sco2es.py
+  - sco2es
 
 markdown_extensions:
   - admonition
