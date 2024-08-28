@@ -4,7 +4,7 @@ __version__ = "0.0.1"
 
 
 from abc import abstractmethod
-from typing import Protocol
+from typing import Protocol, Annotated
 
 import numpy as np
 import numpy.typing as npt
@@ -134,16 +134,36 @@ class PackedBed:
     - Constant diameter
     - Constant temperature exterior wall boundary condition
 
+    !!! Info
+        Arrays are annotated with dimensions as follows:
+
+        - `N`: Number of time steps.
+        - `Z`: Number of axial nodes.
+        - `W`: Number of wall nodes.
+
     Attributes:
-        n: Number of nodes in the axial direction.
-        m: Number of wall or lid nodes in the radial or axial directions, respectively.
-        nodes: Total number of nodes.
-        A_cs: Cross-sectional area of the packed bed [m^2^].
-        V_node: Volume of a packed bed node [m].
-        r_wall: Radial positions of wall nodes from centerline [m].
-        r_bound: Radial positions of wall cell boundaries from centerline [m].
+        axial_nodes: Number of nodes in the axial direction.
+        wall_nodes: Number of nodes in the axial or radial directions for the walls and lids, respectively.
+
+        z: Axial positions of the packed bed nodes from the charging inlet in the direction of flow [m].
         z_top_lid: Axial positions of top lid nodes from charging inlet in direction of flow [m].
         z_bottom_lid: Axial positions of bottom lid nodes from charging inlet in direction of flow [m].
+        r_wall: Radial positions of wall nodes from centerline [m].
+
+        T_f: Fluid temperature for bed nodes [K].
+        T_s: Solid temperature for bed nodes [K].
+        T_wall: Temperature of the wall nodes [K].
+        T_top_lid: Temperature of the top lid nodes [K].
+        T_bottom_lid: Temperature of the bottom lide nodes [K].
+
+        i_f: Fluid enthalpy at the node centers [J/kg].
+        cp_f: Fluid specific heat capacity at the node centers [J/kg⋅K].
+        k_f: Fluid thermal conductivity at the node centers [W/m⋅K].
+        rho_f: Fluid density at the node centers [kg/m^3^].
+
+        A_cs: Cross-sectional area of the packed bed [m^2^].
+        V_node: Volume of a packed bed node [m^3^].
+        r_bound: Radial positions of wall cell boundaries from centerline [m].
         V_wall: Volume of the wall cells [m^3^].
         A_wall_z: Surface area of the wall cell boundary in the axial direction [m^2^].
         A_wall_r: Surface area of the wall cell boundary in the radial direction [m^2^].
@@ -193,8 +213,8 @@ class PackedBed:
             rho_wall: npt.ArrayLike,
             cp_wall: npt.ArrayLike,
             *,
-            n: int = 100,
-            n_wall: int | npt.ArrayLike = 10,
+            axial_nodes: int = 100,
+            wall_layer_nodes: int | npt.ArrayLike = 10,
             solid: SolidPropsInterface | None = None
     ):
         """
@@ -210,51 +230,57 @@ class PackedBed:
             k_wall: Thermal conductivity of each wall layer [W/m⋅K].
             rho_wall: Density of each wall layer [kg/m^3^].
             cp_wall: Specific heat capacity of each wall layer [J/kg⋅K].
-            n: Number of axial nodes.
-            n_wall: Number of nodes for each wall layer.
+            axial_nodes: Number of axial nodes.
+            wall_layer_nodes: Number of nodes for each wall layer.
             solid: Solid properties interface.
         """
 
         # Simulation parameters
-        self.n = n
-        self.L = L
-        self.dz = L / n
-        self.t = np.array([0])
-        self.charging = np.array([], dtype=bool)
-        self.z = np.linspace(self.dz / 2, L - self.dz / 2, n)
+        self.axial_nodes: int = axial_nodes
+        self.L: float = L
+        self.dz: float = L / axial_nodes
+        self.t: Annotated[npt.NDArray[float], "N"] = np.array([0])
+        self.charging: Annotated[npt.NDArray[float], "N"] = np.array([], dtype=bool)
+        self.z: Annotated[npt.NDArray[float], "Z"] = np.linspace(self.dz / 2, L - self.dz / 2, axial_nodes)
 
         if solid is not None:
             self.solid = solid
 
         # Packed bed parameters
-        self.D = D
-        self.d = d
-        self.eps = eps
-        self.A_cs = np.pi * self.D ** 2 / 4
-        self.A_node_wall_intf = np.pi * self.D * self.dz
-        self.V_node = np.pi * self.D ** 2 / 4 * self.dz
+        self.D: float = D
+        self.d: float = d
+        self.eps: float = eps
+        self.A_cs: float = np.pi * self.D ** 2 / 4
+        self.A_node_wall_intf: float = np.pi * self.D * self.dz
+        self.V_node: float = np.pi * self.D ** 2 / 4 * self.dz
 
         # Fluid properties
-        self.P_intf = np.full((1, n + 1), P)
-        self.T_f = np.full((1, n), T_initial, dtype=float)
-        self.i_f = self.calculate_fluid_enthalpy(self.T_f[0], self._interp(self.P_intf[0]))
-        self.cp_f = np.zeros_like(self.T_f)
+        self.P_intf: Annotated[npt.NDArray[float], "N,Z+1"] = np.full((1, axial_nodes + 1), P)
+        self.T_f: Annotated[npt.NDArray[float], "N,Z"] = np.full((1, axial_nodes), T_initial, dtype=float)
+        self.i_f: Annotated[npt.NDArray[float], "Z"] = self.calculate_fluid_enthalpy(self.T_f[0], self._interp(self.P_intf[0]))
+        self.cp_f: Annotated[npt.NDArray[float], "N,Z"] = np.zeros_like(self.T_f)
+        self.k_f: Annotated[npt.NDArray[float], "Z"]
+        self.rho_f: Annotated[npt.NDArray[float], "Z"]
+        self.mu_f: Annotated[npt.NDArray[float], "Z"]
         self.k_f, self.rho_f, self.mu_f, self.cp_f[0] = self.calculate_fluid_props(
             self.i_f, self._interp(self.P_intf[0]))[1:]
 
         # Solid properties
-        self.T_s = np.full((1, n), T_initial, dtype=float)
-        self.rho_s = self.solid.density
-        self.E_s = self.solid.emissivity(self.T_s[0])
-        self.k_s = self.solid.thermal_conductivity(self.T_s[0])
+        self.T_s: Annotated[npt.NDArray[float], "N,Z"] = np.full((1, axial_nodes), T_initial, dtype=float)
+        self.rho_s: float = self.solid.density
+        self.E_s: Annotated[npt.NDArray[float], "Z"] = self.solid.emissivity(self.T_s[0])
+        self.k_s: Annotated[npt.NDArray[float], "Z"] = self.solid.thermal_conductivity(self.T_s[0])
 
         # Field variables
-        self.m_dot = np.zeros((1, n + 1))  # Initially stationary
+        self.m_dot: Annotated[npt.NDArray[float], "N,Z+1"] = np.zeros((1, axial_nodes + 1))  # Initially stationary
+        self.k_eff: Annotated[npt.NDArray[float], "Z"]
+        self.h_wall: Annotated[npt.NDArray[float], "Z"]
+        self.h_v: Annotated[npt.NDArray[float], "Z"]
         self.k_eff, self.h_wall, self.h_v = self.calculate_heat_transfer_coeffs(
             self._interp(self.m_dot[0]), self.T_f[0], self.k_f, self.cp_f[0], self.mu_f, self.k_s, self.E_s)
 
         # Wall/lid parameters
-        self.T_env = T_env
+        self.T_env: float = T_env
 
         t_wall = np.asarray(t_wall, dtype=float)
         k_wall = np.asarray(k_wall, dtype=float)
@@ -262,41 +288,40 @@ class PackedBed:
         cp_wall = np.asarray(cp_wall, dtype=float)
 
         assert t_wall.size == k_wall.size == rho_wall.size == cp_wall.size
-        if isinstance(n_wall, int):
-            n_wall = np.full(t_wall.shape, n_wall)
+        if isinstance(wall_layer_nodes, int):
+            wall_layer_nodes = np.full(t_wall.shape, wall_layer_nodes)
 
-        self.m = sum(n_wall)
-        self.nodes = 2 * (n + self.m) + n * self.m
-        self.dr = np.repeat(t_wall / n_wall, n_wall)
+        self.wall_nodes: int = sum(wall_layer_nodes)
+        self.dr: Annotated[npt.NDArray[float], "R"] = np.repeat(t_wall / wall_layer_nodes, wall_layer_nodes)
 
         # Determine wall grid properties
         dx_bound = np.add.accumulate(np.insert(self.dr, 0, 0))
         dx_center = self._interp(dx_bound)
 
-        self.r_bound = self.D / 2 + dx_bound
-        self.r_wall = self.D / 2 + dx_center
-        self.z_top_lid = -dx_center[::-1]
-        self.z_bottom_lid = L + dx_center
+        self.r_bound: Annotated[npt.NDArray[float], "W+1"] = self.D / 2 + dx_bound
+        self.r_wall: Annotated[npt.NDArray[float], "W"] = self.D / 2 + dx_center
+        self.z_top_lid: Annotated[npt.NDArray[float], "W"] = -dx_center[::-1]
+        self.z_bottom_lid: Annotated[npt.NDArray[float], "W"] = L + dx_center
 
-        self.A_wall_z = np.pi * (self.r_bound[1:]**2 - self.r_bound[:-1]**2)
-        self.V_wall = self.A_wall_z * self.dz
-        self.A_wall_r = 2 * np.pi * self.dz * self.r_bound
+        self.A_wall_z: Annotated[npt.NDArray[float], "W"] = np.pi * (self.r_bound[1:]**2 - self.r_bound[:-1]**2)
+        self.V_wall: Annotated[npt.NDArray[float], "W"] = self.A_wall_z * self.dz
+        self.A_wall_r: Annotated[npt.NDArray[float], "W+1"] = 2 * np.pi * self.dz * self.r_bound
 
-        self.V_bottom_lid = self.A_cs * np.diff(dx_bound)
-        self.V_top_lid = self.V_bottom_lid[::-1]
+        self.V_bottom_lid: Annotated[npt.NDArray[float], "W"] = self.A_cs * np.diff(dx_bound)
+        self.V_top_lid: Annotated[npt.NDArray[float], "W"] = self.V_bottom_lid[::-1]
 
         # Initialize wall/lid temperature distribution
-        self.T_wall = np.empty((1, self.n, self.m), dtype=float)
-        self.T_top_lid = np.empty((1, self.m), dtype=float)
-        self.T_bottom_lid = np.empty((1, self.m), dtype=float)
+        self.T_wall: Annotated[npt.NDArray[float], "N,Z,W"] = np.empty((1, self.axial_nodes, self.wall_nodes), dtype=float)
+        self.T_top_lid: Annotated[npt.NDArray[float], "N,W"] = np.empty((1, self.wall_nodes), dtype=float)
+        self.T_bottom_lid: Annotated[npt.NDArray[float], "N,W"] = np.empty((1, self.wall_nodes), dtype=float)
 
         # Calculate heat flux through lid and walls
         R_lid = t_wall / k_wall  # Convection/conduction resistance
         Q_lid = (T_initial - T_env) / np.sum(R_lid)  # Heat flux through the lid
         T_lid_bound = np.array([T_initial, *(T_initial - np.add.accumulate(Q_lid * R_lid))])
 
-        self.r_layer_bound = D/2 + np.array([0, *np.add.accumulate(t_wall)])
-        R_wall = np.log(self.r_layer_bound[1:] / self.r_layer_bound[:-1]) / (2 * np.pi * k_wall * L)
+        r_layer_bound = D/2 + np.array([0, *np.add.accumulate(t_wall)])
+        R_wall = np.log(r_layer_bound[1:] / r_layer_bound[:-1]) / (2 * np.pi * k_wall * L)
         Q_wall = (T_initial - T_env) / np.sum(R_wall)
         T_wall_bound = [T_initial, *(T_initial - np.add.accumulate(Q_wall * R_wall))]
 
@@ -304,10 +329,10 @@ class PackedBed:
         T_wall = []
         T_lid = []
 
-        for i in range(n_wall.size):
-            dx = t_wall[i] / (2 * n_wall[i]) * (1 + 2 * np.arange(n_wall[i]))
+        for i in range(wall_layer_nodes.size):
+            dx = t_wall[i] / (2 * wall_layer_nodes[i]) * (1 + 2 * np.arange(wall_layer_nodes[i]))
             T_wall.append(T_wall_bound[i] -
-                          Q_wall * np.log(1 + dx / self.r_layer_bound[i]) / (2 * np.pi * L * k_wall[i]))
+                          Q_wall * np.log(1 + dx / r_layer_bound[i]) / (2 * np.pi * L * k_wall[i]))
             T_lid.append(T_lid_bound[i] + np.diff(T_lid_bound)[i] * dx / t_wall[i])
 
         T_lid = np.array(T_lid).flatten()
@@ -317,17 +342,17 @@ class PackedBed:
         self.T_wall[0] = T_wall
 
         # Fill wall/lid properties
-        self.k_wall = np.repeat(k_wall, n_wall)
-        self.rho_wall = np.repeat(rho_wall, n_wall)
-        self.cp_wall = np.repeat(cp_wall, n_wall)
+        self.k_wall: Annotated[npt.NDArray[float], "W"] = np.repeat(k_wall, wall_layer_nodes)
+        self.rho_wall: Annotated[npt.NDArray[float], "W"] = np.repeat(rho_wall, wall_layer_nodes)
+        self.cp_wall: Annotated[npt.NDArray[float], "W"] = np.repeat(cp_wall, wall_layer_nodes)
 
-        self.k_bottom_lid = self.k_wall
-        self.rho_bottom_lid = self.rho_wall
-        self.cp_bottom_lid = self.cp_wall
+        self.k_bottom_lid: Annotated[npt.NDArray[float], "W"] = self.k_wall
+        self.rho_bottom_lid: Annotated[npt.NDArray[float], "W"] = self.rho_wall
+        self.cp_bottom_lid: Annotated[npt.NDArray[float], "W"] = self.cp_wall
 
-        self.k_top_lid = self.k_wall[::-1]
-        self.rho_top_lid = self.rho_wall[::-1]
-        self.cp_top_lid = self.cp_wall[::-1]
+        self.k_top_lid: Annotated[npt.NDArray[float], "W"] = self.k_wall[::-1]
+        self.rho_top_lid: Annotated[npt.NDArray[float], "W"] = self.rho_wall[::-1]
+        self.cp_top_lid: Annotated[npt.NDArray[float], "W"] = self.cp_wall[::-1]
 
     @classmethod
     def load_case(cls, case_file: str):
@@ -361,8 +386,8 @@ class PackedBed:
             k_wall=[layer["thermal-conductivity"] for layer in wall],
             rho_wall=[layer["density"] for layer in wall],
             cp_wall=[layer["specific-heat"] for layer in wall],
-            n=case["simulation"]["grid"]["axial-nodes"],
-            n_wall=case["simulation"]["grid"]["wall-layer-nodes"]
+            axial_nodes=case["simulation"]["grid"]["axial-nodes"],
+            wall_layer_nodes=case["simulation"]["grid"]["wall-layer-nodes"]
         )
 
     @staticmethod
@@ -1254,6 +1279,16 @@ class PackedBed:
     @staticmethod
     @np.vectorize
     def pressure_drop(dz, rho_f, mu_f, G, eps, d, *, psi=0.9, xi1: float = 180, xi2: float = 1.8):
+            rho_f: float,
+            mu_f: float,
+            G: float,
+            eps: float,
+            d: float,
+            *,
+            psi: float = 0.9,
+            xi1: float = 180,
+            xi2: float = 1.8
+    ):
         r"""
         Calculates the pressure drop using the modified Ergun's equation[^1]
 
