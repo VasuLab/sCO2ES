@@ -1,0 +1,1 @@
+::: sco2es.properties

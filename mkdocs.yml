@@ -4,11 +4,25 @@ repo_name: VasuLab/sCO2ES
 site_url: https://vasulab.github.io/sCO2ES/
 copyright: "Copyright &copy; 2024 UCFRF, Inc. All Rights Reserved."
 
+nav:
+  - Overview:
+    - index.md
+  - Reference:
+    - reference/index.md
+    - Case Files: reference/case-files.md
+    - Errors: reference/errors.md
+    - Properties: reference/properties.md
+
+
 theme:
   name: material
   icon:
     repo: fontawesome/brands/github
   features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.indexes
+    - navigation.tabs
     - search.highlight
     - toc.follow
   palette:
@@ -46,11 +60,12 @@ plugins:
     handlers:
       python:
         options:
-          docstring_section_style: list
+          docstring_section_style: table
           members_order: source
+          merge_init_into_class: True
           show_root_toc_entry: False
           show_source: False
-          show_signature: True
+          show_signature: False
           show_symbol_type_heading: True
           show_symbol_type_toc: True
 
