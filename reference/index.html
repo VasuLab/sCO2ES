@@ -863,8 +863,6 @@
 
 
   <div class="doc doc-contents first">
-  
-      <p>Copyright © 2024 UCFRF, Inc. All Rights Reserved.</p>
 
   
 
@@ -899,6 +897,15 @@
 <li>Constant diameter</li>
 <li>Constant temperature exterior wall boundary condition</li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The model was intended for use with sCO<sub>2</sub> as the heat transfer fluid. The <a class="autorefs autorefs-internal" href="#sco2es.PackedBed.fluid"><code>fluid</code></a> attribute can be
+set to any <code>CoolProp.AbstractState</code> object, but the code has not been tested with any other fluid.</p>
+</div>
+<p>By default, <code>sco2es.PackedBed</code> uses <a href="https://github.com/coolprop/coolprop">CoolProp</a> to calculate the properties of
+CO<sub>2</sub> and assumes that the solid particles are made of <a class="autorefs autorefs-internal" href="properties/#sco2es.properties.Alumina"><code>Alumina</code></a>, for which empirical correlations are used to calculate
+relevant properties. To use a material other than alumina, create a class matching the protocol
+<a class="autorefs autorefs-internal" href="properties/#sco2es.properties.SolidProperties"><code>SolidProperties</code></a> and set the <a class="autorefs autorefs-internal" href="#sco2es.PackedBed.solid"><code>solid</code></a> attribute.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Arrays are annotated with dimensions as follows:</p>
