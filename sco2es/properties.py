@@ -42,6 +42,7 @@ class Alumina(SolidProperties):
     """An implementation of experimental correlations for alumina's relevant properties."""
 
     density = 3950
+    """Density of alumina [kg/m^3^]."""
 
     @staticmethod
     def internal_energy(T):

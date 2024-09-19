@@ -1,6 +1,4 @@
-"""Copyright © 2024 UCFRF, Inc. All Rights Reserved."""
-
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 from .errors import StopCriterionError, ModelAssumptionError
 from .properties import SolidProperties, Alumina
@@ -30,6 +28,15 @@ class PackedBed:
     - Constant axial spacing
     - Constant diameter
     - Constant temperature exterior wall boundary condition
+
+    !!! Warning
+        The model was intended for use with sCO~2~ as the heat transfer fluid. The [`fluid`][sco2es.PackedBed.fluid] attribute can be
+        set to any `CoolProp.AbstractState` object, but the code has not been tested with any other fluid.
+
+    By default, `sco2es.PackedBed` uses [CoolProp](https://github.com/coolprop/coolprop) to calculate the properties of
+    CO~2~ and assumes that the solid particles are made of [`Alumina`][sco2es.properties.Alumina], for which empirical correlations are used to calculate
+    relevant properties. To use a material other than alumina, create a class matching the protocol
+    [`SolidProperties`][sco2es.properties.SolidProperties] and set the [`solid`][sco2es.PackedBed.solid] attribute.
 
     !!! Info
         Arrays are annotated with dimensions as follows:

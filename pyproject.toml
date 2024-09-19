@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sco2es"
-version = "0.0.1"
+version = "0.1.0"
 description = "A supercritical CO2 packed bed thermal energy storage simulation tool."
 authors = ["Cory Kinney <cory.kinney@ucf.edu>"]
 readme = "README.md"
