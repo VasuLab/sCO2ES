@@ -1,5 +1,7 @@
 # Supercritical Carbon Dioxide Energy Storage (sCO₂ES)
 
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+
 `sco2es` is intended for modeling of energy storage for supercritical carbon dioxide (sCO₂) 
 packed bed thermal energy storage systems. This work is based on the model detailed by Battisti et al.[^1].
 
