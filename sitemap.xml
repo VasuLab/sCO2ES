@@ -5,4 +5,24 @@
          <lastmod>2024-09-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
+    <url>
+         <loc>https://vasulab.github.io/sCO2ES/reference/</loc>
+         <lastmod>2024-09-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://vasulab.github.io/sCO2ES/reference/case-files/</loc>
+         <lastmod>2024-09-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://vasulab.github.io/sCO2ES/reference/errors/</loc>
+         <lastmod>2024-09-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://vasulab.github.io/sCO2ES/reference/properties/</loc>
+         <lastmod>2024-09-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
 </urlset>
