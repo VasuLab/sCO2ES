@@ -191,6 +191,8 @@ class PackedBed:
         rho_wall = np.asarray(rho_wall, dtype=float)
         cp_wall = np.asarray(cp_wall, dtype=float)
 
+        self.D_outer: float = D + 2 * np.sum(t_wall)
+
         assert t_wall.size == k_wall.size == rho_wall.size == cp_wall.size
         if isinstance(wall_layer_nodes, int):
             wall_layer_nodes = np.full(t_wall.shape, wall_layer_nodes)
@@ -258,6 +260,11 @@ class PackedBed:
         self.rho_top_lid: Annotated[npt.NDArray[float], "W"] = self.rho_wall[::-1]
         self.cp_top_lid: Annotated[npt.NDArray[float], "W"] = self.cp_wall[::-1]
 
+        # Energy loss
+        self.E_loss_top_lid: Annotated[npt.NDArray[float], "N-1"] = np.empty((1, 0), dtype=float)
+        self.E_loss_bottom_lid: Annotated[npt.NDArray[float], "N-1"] = np.empty((1, 0), dtype=float)
+        self.E_loss_walls: Annotated[npt.NDArray[float], "N-1"] = np.empty((1, 0), dtype=float)
+
     @classmethod
     def load_case(cls, case_file: str):
         """
@@ -307,6 +314,11 @@ class PackedBed:
         to the given time.
         """
         return np.argmin(np.abs(s + 60 * (m + 60 * h) - self.t))
+
+    @property
+    def E_loss_total(self):
+        """Total energy loss at each timestep."""
+        return self.E_loss_top_lid + self.E_loss_bottom_lid + self.E_loss_walls
 
     def advance(
             self,
@@ -499,6 +511,14 @@ class PackedBed:
                 self.V_wall, self.A_wall_r, self.A_wall_z, dt
             )
 
+            E_loss_top_lid = (self.k_top_lid[0] * np.pi * self.D**2 / 4
+                              * (T_top_lid[0] - self.T_env) / (self.dr[-1] / 2))
+            E_loss_bottom_lid = (self.k_bottom_lid[-1] * np.pi * self.D**2 / 4
+                                 * (T_bottom_lid[-1] - self.T_env) / (self.dr[-1] / 2))
+            E_loss_walls = self.k_wall[-1] * self.D_outer * self.dz * np.sum(
+                (T_wall[:, -1] - self.T_env) / (self.dr[-1] / 2)  # Shouldn't heat loss through the wall use ln(r2/r1)?
+            )
+
             # Check convergence
             converged = np.all([
                 np.all(np.abs(P_intf - P_intf_prev) <= self.atol_P),
@@ -524,6 +544,9 @@ class PackedBed:
                 self.T_wall = np.append(self.T_wall, [T_wall], axis=0)
                 self.T_top_lid = np.append(self.T_top_lid, [T_top_lid], axis=0)
                 self.T_bottom_lid = np.append(self.T_bottom_lid, [T_bottom_lid], axis=0)
+                self.E_loss_top_lid = np.append(self.E_loss_top_lid, [E_loss_top_lid])
+                self.E_loss_bottom_lid = np.append(self.E_loss_bottom_lid, [E_loss_bottom_lid])
+                self.E_loss_walls = np.append(self.E_loss_walls, [E_loss_walls])
                 self.cp_f = np.append(self.cp_f, [cp_f], axis=0)
                 self.m_dot = np.append(self.m_dot, [m_dot], axis=0)
                 self.i_f = i_f
